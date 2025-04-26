@@ -17,7 +17,7 @@ namespace Codecaine.Common.CQRS.Base
     {
         private readonly ILogger _logger;
 
-        public BaseHandler(ILogger logger)
+        protected BaseHandler(ILogger logger)
         {
             _logger = logger;
         }
@@ -62,7 +62,7 @@ namespace Codecaine.Common.CQRS.Base
             }
             catch (OperationCanceledException ex) when (cancellationToken?.IsCancellationRequested == true)
             {
-                _logger?.LogWarning("Operation was canceled.");
+                _logger?.LogWarning(ex,"Operation was canceled.");
 
                 // Execute rollback if it's provided
                 if (rollBackAsync != null)
@@ -72,6 +72,10 @@ namespace Codecaine.Common.CQRS.Base
                 }
 
                 throw new ApplicationLayerException(new Primitives.Errors.ApplicationError(this.GetType().FullName, ex));
+            }
+            catch (DomainException)
+            {
+                throw; // Re throw the original exception.
             }
             catch (InfrastructureException )
             {                
@@ -125,7 +129,7 @@ namespace Codecaine.Common.CQRS.Base
             }
             catch (OperationCanceledException ex) when (cancellationToken?.IsCancellationRequested == true)
             {
-                _logger?.LogWarning("Operation was canceled.");
+                _logger?.LogWarning(ex,"Operation was canceled.");
 
                 // Execute rollback if it's provided
                 if (rollBackAsync != null)
@@ -136,6 +140,10 @@ namespace Codecaine.Common.CQRS.Base
 
                 throw new ApplicationLayerException(new Primitives.Errors.ApplicationError(this.GetType().FullName, ex));
             }
+            catch (DomainException)
+            {
+                throw; // Re throw the original exception.
+            }
             catch (InfrastructureException )
             {               
                 throw; // Re throw the original exception.
@@ -143,7 +151,7 @@ namespace Codecaine.Common.CQRS.Base
            
             catch (Exception ex)
             {
-                _logger?.LogError(ex, "An ServiceApplicationException occurred.");
+                _logger?.LogError(ex, "An ApplicationLayerException occurred.");
                 throw new ApplicationLayerException(new Primitives.Errors.ApplicationError(this.GetType().FullName, ex));
             }
         }

@@ -1,10 +1,5 @@
 ﻿using Codecaine.Common.CQRS.Events;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Codecaine.Common.CQRS.Base
 {
@@ -19,7 +14,7 @@ namespace Codecaine.Common.CQRS.Base
         /// Initializes a new instance of the <see cref="IntegrationEventHandler{TIntegrationEvent}"/> class.
         /// </summary>
         /// <param name="logger">The logger instance to be used for logging.</param>
-        public IntegrationEventHandler(ILogger logger) : base(logger)
+        protected IntegrationEventHandler(ILogger logger) : base(logger)
         {
         }
 
