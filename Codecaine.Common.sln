@@ -5,6 +5,12 @@ VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codecaine.Common", "src\Codecaine.Common\Codecaine.Common.csproj", "{4AA4E042-0D86-473E-B239-87058E2FBF0F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{127FF981-CD8B-4243-9518-1C8372058167}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{19CD5CEC-AB09-4C97-B111-F3A3B953D72B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Codecaine.Common.Tests", "tests\Codecaine.Common.Tests\Codecaine.Common.Tests.csproj", "{747AC266-7496-40DC-84E2-97D732BACCE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,8 +21,16 @@ Global
 		{4AA4E042-0D86-473E-B239-87058E2FBF0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4AA4E042-0D86-473E-B239-87058E2FBF0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4AA4E042-0D86-473E-B239-87058E2FBF0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{747AC266-7496-40DC-84E2-97D732BACCE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{747AC266-7496-40DC-84E2-97D732BACCE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{747AC266-7496-40DC-84E2-97D732BACCE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{747AC266-7496-40DC-84E2-97D732BACCE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4AA4E042-0D86-473E-B239-87058E2FBF0F} = {127FF981-CD8B-4243-9518-1C8372058167}
+		{747AC266-7496-40DC-84E2-97D732BACCE1} = {19CD5CEC-AB09-4C97-B111-F3A3B953D72B}
 	EndGlobalSection
 EndGlobal

@@ -114,7 +114,7 @@ namespace Codecaine.Common.Persistence
         /// <summary>
         /// A helper class that replaces one expression with another within an expression tree.
         /// </summary>
-        private class ReplaceVisitor : ExpressionVisitor
+        private sealed class ReplaceVisitor : ExpressionVisitor
         {
             private readonly Expression from, to;
 
