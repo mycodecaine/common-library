@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Core\Repositories\" />
+    <Folder Include="Errors\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Codecaine.Common\Codecaine.Common.csproj" />
+  </ItemGroup>
+
 </Project>

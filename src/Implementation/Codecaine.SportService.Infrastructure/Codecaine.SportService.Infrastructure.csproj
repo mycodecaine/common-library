@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Codecaine.SportService.Application\Codecaine.SportService.Application.csproj" />
+  </ItemGroup>
+
 </Project>

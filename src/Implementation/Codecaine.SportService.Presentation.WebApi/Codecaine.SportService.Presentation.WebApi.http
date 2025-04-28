@@ -1,0 +1,6 @@
+@Codecaine.SportService.Presentation.WebApi_HostAddress = http://localhost:5077
+
+GET {{Codecaine.SportService.Presentation.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
