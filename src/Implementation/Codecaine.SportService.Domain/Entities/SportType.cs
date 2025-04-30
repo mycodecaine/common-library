@@ -21,14 +21,7 @@ namespace Codecaine.SportService.Domain.Entities
         /// <summary>  
         /// Gets the URL of the image representing the sport type.  
         /// </summary>  
-        public string ImageUrl { get; private set; }
-
-        private readonly List<SportVariant> _sportVariants = [];
-
-        /// <summary>  
-        /// Gets the collection of sport variants associated with this sport type.  
-        /// </summary>  
-        public IReadOnlyCollection<SportVariant> SportVariants => _sportVariants.AsReadOnly();
+        public string ImageUrl { get; private set; }        
 
         /// <summary>  
         /// Initializes a new instance of the <see cref="SportType"/> class.  

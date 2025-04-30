@@ -33,22 +33,23 @@ namespace Codecaine.SportService.Domain.Entities
         /// </summary>  
         public bool IsOlympic { get; private set; } = false;
 
+        public Guid SportTypeId { get; private set; }
         /// <summary>  
         /// Gets the type of sport associated with this variant.  
         /// </summary>  
-        public SportType SportType { get; private set; }
+        public SportType SportType { get;  }
 
         /// <summary>  
         /// Gets the rules associated with this sport variant.  
         /// </summary>  
         public SportRule Rules { get; private set; }
 
-        private readonly List<CountryCode> _popularInCountries = [];
+        private readonly List<PopularInCountry> _popularInCountries = [];
 
         /// <summary>  
         /// Gets the list of countries where this sport variant is popular.  
         /// </summary>  
-        public IReadOnlyCollection<CountryCode> PopularInCountries => _popularInCountries.AsReadOnly();
+        public IReadOnlyCollection<PopularInCountry> PopularInCountries => _popularInCountries.AsReadOnly();
 
         private readonly List<PlayerPosition> _playerPositions = [];
 
@@ -56,6 +57,10 @@ namespace Codecaine.SportService.Domain.Entities
         /// Gets the list of player positions associated with this sport variant.  
         /// </summary>  
         public IReadOnlyCollection<PlayerPosition> PlayerPositions => _playerPositions.AsReadOnly();
+
+        
+
+        
 
         /// <summary>  
         /// Initializes a new instance of the <see cref="SportVariant"/> class.  
@@ -71,7 +76,7 @@ namespace Codecaine.SportService.Domain.Entities
         /// <param name="isOlympic">Indicates whether the sport variant is part of the Olympic Games.</param>  
         /// <param name="sportType">The type of sport associated with this variant.</param>  
         /// <param name="rules">The rules associated with this sport variant.</param>  
-        public SportVariant(string name, string description, string imageUrl, bool isOlympic, SportType sportType, SportRule rules) : base(Guid.NewGuid())
+        public SportVariant(string name, string description, string imageUrl, bool isOlympic, Guid sportTypeId, SportRule rules) : base(Guid.NewGuid())
         {
             Ensure.NotEmpty(name, "The name is required.", nameof(name));
             Ensure.NotEmpty(description, "The description is required.", nameof(description));
@@ -80,30 +85,31 @@ namespace Codecaine.SportService.Domain.Entities
             Description = description;
             ImageUrl = imageUrl;
             IsOlympic = isOlympic;
-            SportType = sportType;
+            SportTypeId = sportTypeId;
             Rules = rules;
         }
 
         /// <summary>  
         /// Adds a country to the list of countries where this sport variant is popular.  
         /// </summary>  
-        /// <param name="countryCode">The country code to add.</param>  
-        public void AddPopularInCountry(CountryCode countryCode)
+        /// <param name="popularInCountry">The country code to add.</param>  
+        public void AddPopularInCountry(PopularInCountry popularInCountry)
         {
-            if (_popularInCountries.Contains(countryCode))
+            if (_popularInCountries.Any(x=>x.CountryCode == popularInCountry.CountryCode))
                 return;
-            _popularInCountries.Add(countryCode);
+            _popularInCountries.Add(popularInCountry);
         }
 
         /// <summary>  
         /// Removes a country from the list of countries where this sport variant is popular.  
         /// </summary>  
         /// <param name="countryCode">The country code to remove.</param>  
-        public void RemovePopularInCountry(CountryCode countryCode)
+        public void RemovePopularInCountry(PopularInCountry popularInCountry)
         {
-            if (!_popularInCountries.Contains(countryCode))
+            var country = _popularInCountries.FirstOrDefault(x => x.CountryCode == popularInCountry.CountryCode);
+            if (country is null)
                 return;
-            _popularInCountries.Remove(countryCode);
+            _popularInCountries.Remove(country);
         }
 
         /// <summary>  
@@ -160,9 +166,9 @@ namespace Codecaine.SportService.Domain.Entities
         /// <param name="sportType">The type of sport associated with this variant.</param>  
         /// <param name="rules">The rules associated with this sport variant.</param>  
         /// <returns>A new instance of the <see cref="SportVariant"/> class.</returns>  
-        public static SportVariant Create(string name, string description, string imageUrl, bool isOlympic, SportType sportType, SportRule rules)
+        public static SportVariant Create(string name, string description, string imageUrl, bool isOlympic, Guid sportTypeId, SportRule rules)
         {
-            var sportVariant = new SportVariant(name, description, imageUrl, isOlympic, sportType, rules);
+            var sportVariant = new SportVariant(name, description, imageUrl, isOlympic, sportTypeId, rules);
 
             sportVariant.AddDomainEvent(new SportVariantCreatedDomainEvent(sportVariant));
 
@@ -178,7 +184,7 @@ namespace Codecaine.SportService.Domain.Entities
         /// <param name="isOlympic">Indicates whether the sport variant is part of the Olympic Games.</param>  
         /// <param name="sportType">The new type of sport associated with this variant.</param>  
         /// <param name="rules">The new rules associated with this sport variant.</param>  
-        public void Update(string name, string description, string imageUrl, bool isOlympic, SportType sportType, SportRule rules)
+        public void Update(string name, string description, string imageUrl, bool isOlympic, Guid sportType, SportRule rules)
         {
             Ensure.NotEmpty(name, "The name is required.", nameof(name));
             Ensure.NotEmpty(description, "The description is required.", nameof(description));
@@ -187,7 +193,7 @@ namespace Codecaine.SportService.Domain.Entities
             Description = description;
             ImageUrl = imageUrl;
             IsOlympic = isOlympic;
-            SportType = sportType;
+            SportTypeId = sportType;
             Rules = rules;
             AddDomainEvent(new SportVariantUpdatedDomainEvent(this));
         }
