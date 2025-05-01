@@ -41,6 +41,11 @@ namespace Codecaine.SportService.Domain.Entities
             ImageUrl = imageUrl;
         }
 
+        public static SportType Create(string name, string description, string imageUrl)
+        {
+            return new SportType(name, description, imageUrl);
+        }
+
         public void Update(string name, string description, string imageUrl)
         {
             Name = name;

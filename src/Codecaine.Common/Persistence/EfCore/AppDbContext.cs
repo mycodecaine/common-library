@@ -13,7 +13,7 @@ using System.Reflection;
 
 namespace Codecaine.Common.Persistence.EfCore
 {
-    public class AppDbContext : DbContext, IDbContext, IUnitOfWork
+    public abstract class AppDbContext : DbContext, IDbContext, IUnitOfWork
     {
         private readonly IDateTime _dateTime;
         private readonly IMediator _mediator;

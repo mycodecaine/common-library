@@ -10,4 +10,10 @@
     <ProjectReference Include="..\Codecaine.SportService.Domain\Codecaine.SportService.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="UseCases\SportTypes\Events\" />
+    <Folder Include="UseCases\SportTypes\Queries\" />
+    <Folder Include="UseCases\SportVariants\" />
+  </ItemGroup>
+
 </Project>

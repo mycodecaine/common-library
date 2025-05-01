@@ -3,9 +3,9 @@
     /// <summary>
     /// Represents the current user in the application.
     /// </summary>
-    public interface ICurrentUser
+    public interface IRequestContext
     {
-        string UserId { get; }
+        Guid UserId { get; }
         string UserName { get; }
     }
 }
