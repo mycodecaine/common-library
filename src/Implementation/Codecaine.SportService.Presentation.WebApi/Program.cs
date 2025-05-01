@@ -5,6 +5,7 @@ using Codecaine.SportService.Infrastructure;
 using Codecaine.SportService.Presentation.WebApi.Context;
 using Scalar.AspNetCore;
 using Codecaine.Common.AspNetCore.Middleware;
+using Microsoft.Extensions.Options;
 
 namespace Codecaine.SportService.Presentation.WebApi
 {
@@ -34,11 +35,18 @@ namespace Codecaine.SportService.Presentation.WebApi
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
+            // TODO : follow this https://yogeshhadiya33.medium.com/implement-scalar-in-net-api-91d284479d1d
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
-                app.MapScalarApiReference();
+                app.MapScalarApiReference(options => {
+                    options.Title = "Codecaine Sport Service API";
+                    options.Theme = ScalarTheme.Default;
+                });
             }
+
+           
+
             app.UseCodecaineCommonExceptionHandler();
             app.UseHttpsRedirection();
 
