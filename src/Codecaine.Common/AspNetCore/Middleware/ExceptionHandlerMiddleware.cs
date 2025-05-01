@@ -122,7 +122,7 @@ namespace Codecaine.Common.AspNetCore.Middleware
                 ValidationException validationException => (HttpStatusCode.BadRequest, validationException.Errors),
                 DomainException domainException => (HttpStatusCode.BadRequest, new[] { domainException.Error }),
                 ArgumentException argumentException => (HttpStatusCode.BadRequest, new[] { new Error(GeneralErrors.UnProcessableRequest, argumentException.Message) }),
-                AuthenticationException authenticationException => (HttpStatusCode.Unauthorized, new[] { AuthenticationErrors.UnauthorizedUser }),
+                AuthenticationException  => (HttpStatusCode.Unauthorized, new[] { AuthenticationErrors.UnauthorizedUser }),
                 ApplicationLayerException serviceApplicationException => (HttpStatusCode.InternalServerError, new[] { serviceApplicationException.Error }),
                 InfrastructureException serviceInfrastructureException => (HttpStatusCode.InternalServerError, new[] { serviceInfrastructureException.Error }),
 

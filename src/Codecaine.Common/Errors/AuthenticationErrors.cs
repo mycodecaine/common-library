@@ -10,7 +10,7 @@ namespace Codecaine.Common.Errors
     /// <summary>
     /// Contains predefined authentication-related errors.
     /// </summary>
-    public class AuthenticationErrors
+    public static class AuthenticationErrors
     {
         /// <summary>
         /// Error indicating invalid username or password.

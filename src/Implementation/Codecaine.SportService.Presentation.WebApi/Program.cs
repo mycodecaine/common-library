@@ -4,6 +4,7 @@ using Codecaine.SportService.Application;
 using Codecaine.SportService.Infrastructure;
 using Codecaine.SportService.Presentation.WebApi.Context;
 using Scalar.AspNetCore;
+using Codecaine.Common.AspNetCore.Middleware;
 
 namespace Codecaine.SportService.Presentation.WebApi
 {
@@ -38,7 +39,7 @@ namespace Codecaine.SportService.Presentation.WebApi
                 app.MapOpenApi();
                 app.MapScalarApiReference();
             }
-
+            app.UseCodecaineCommonExceptionHandler();
             app.UseHttpsRedirection();
 
             app.UseAuthorization();

@@ -17,10 +17,10 @@ namespace Codecaine.Common.Persistence.EfCore
     {
         private readonly IDateTime _dateTime;
         private readonly IMediator _mediator;
-        public AppDbContext()
+        protected AppDbContext()
         {
         }
-        public AppDbContext(DbContextOptions options)
+        protected AppDbContext(DbContextOptions options)
              : base(options)
         {
         }
@@ -31,7 +31,7 @@ namespace Codecaine.Common.Persistence.EfCore
         /// <param name="options">The database context options.</param>
         /// <param name="dateTime">The current date and time.</param>
         /// <param name="mediator">The mediator.</param>
-        public AppDbContext(DbContextOptions options, IDateTime dateTime, IMediator mediator)
+        protected AppDbContext(DbContextOptions options, IDateTime dateTime, IMediator mediator)
             : base(options)
         {
             _dateTime = dateTime;
@@ -157,6 +157,7 @@ namespace Codecaine.Common.Persistence.EfCore
                 return;
             }
 
+#pragma warning disable S3267 // Loops should be simplified with "LINQ" expressions
             foreach (ReferenceEntry referenceEntry in entityEntry.References.Where(r => r.TargetEntry != null && r.TargetEntry.State == EntityState.Deleted))
             {
                 if (referenceEntry.TargetEntry == null)
@@ -167,6 +168,7 @@ namespace Codecaine.Common.Persistence.EfCore
 
                 UpdateDeletedEntityEntryReferencesToUnchanged(referenceEntry.TargetEntry);
             }
+#pragma warning restore S3267 // Loops should be simplified with "LINQ" expressions
         }
 
         /// <summary>

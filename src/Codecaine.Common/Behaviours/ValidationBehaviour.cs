@@ -2,6 +2,7 @@
 using FluentValidation;
 using FluentValidation.Results;
 using MediatR;
+using ValidationException = Codecaine.Common.Exceptions.ValidationException;
 
 namespace Codecaine.Common.Behaviours
 {
