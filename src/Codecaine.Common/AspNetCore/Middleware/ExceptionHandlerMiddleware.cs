@@ -95,15 +95,15 @@ namespace Codecaine.Common.AspNetCore.Middleware
             if ((request.Method == HttpMethods.Post || request.Method == HttpMethods.Put) && request.ContentLength > 0)
             {
                 request.EnableBuffering();
-                var buffer = new byte[Convert.ToInt32(request.ContentLength)];
-                await request.Body.ReadAsync(buffer, 0, buffer.Length);
-                //get body string here...
-                var requestContent = Encoding.UTF8.GetString(buffer);
 
-                request.Body.Position = 0;  //rewinding the stream to 0
-                return requestContent;
+                using var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true);
+                string body = await reader.ReadToEndAsync();
+
+                request.Body.Position = 0; // Rewind the stream for the next middleware
+                return body;
             }
-            return "";
+
+            return string.Empty;
         }
 
         private static async Task<string> FormatResponse(HttpResponse response)
