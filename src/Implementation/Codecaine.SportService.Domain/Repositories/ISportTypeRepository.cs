@@ -5,5 +5,6 @@ namespace Codecaine.SportService.Domain.Repositories
 {
     public interface ISportTypeRepository : IRepository<SportType>
     {
+        Task<bool> IsNameExist(string name);
     }
 }

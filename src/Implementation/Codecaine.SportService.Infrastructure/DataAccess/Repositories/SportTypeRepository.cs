@@ -2,6 +2,7 @@
 using Codecaine.Common.Persistence.EfCore.Interfaces;
 using Codecaine.SportService.Domain.Entities;
 using Codecaine.SportService.Domain.Repositories;
+using Codecaine.SportService.Infrastructure.DataAccess.Specifications.SportTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,11 @@ namespace Codecaine.SportService.Infrastructure.DataAccess.Repositories
     {
         public SportTypeRepository(IDbContext context) : base(context)
         {
+        }
+
+        public Task<bool> IsNameExist(string name)
+        {
+            return AnyAsync(new SportTypeWithNameSpecification(name));
         }
     }
 }
