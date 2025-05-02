@@ -54,7 +54,7 @@ namespace Codecaine.Implimentation.Tests.UnitTests.Apllication.UseCases.SportTyp
             // Assert
             Assert.That(result.IsSuccess,Is.EqualTo(false));
             Assert.That(result.IsFailure, Is.EqualTo(true));
-            Assert.That("SportTypeNameExist", Is.EqualTo(result.Error.Code));
+            Assert.That(result.Error.Code, Is.EqualTo("SportTypeNameExist"));
             _sportTypeRepositoryMock.Verify(r => r.Insert(It.IsAny<SportType>()), Times.Never);
             _unitOfWorkMock.Verify(u => u.SaveChangesAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
         }
