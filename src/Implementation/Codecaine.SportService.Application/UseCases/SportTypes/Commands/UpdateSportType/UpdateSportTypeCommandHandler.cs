@@ -1,5 +1,6 @@
 ﻿using Codecaine.Common.Abstractions;
 using Codecaine.Common.CQRS.Base;
+using Codecaine.Common.Exceptions;
 using Codecaine.Common.Persistence;
 using Codecaine.Common.Primitives.Errors;
 using Codecaine.Common.Primitives.Result;
@@ -33,19 +34,20 @@ namespace Codecaine.SportService.Application.UseCases.SportTypes.Commands.Update
         public async override Task<Result<UpdateSportTypeCommandResponse>> Handle(UpdateSportTypeCommand request, CancellationToken cancellationToken)=>
          await HandleSafelyAsync(async () =>
          {
-             var exist = await _sportTypeRepository.IsDuplicateNameAsync(request.Id,request.Name);
-             if (exist)
-             {
-                 _logger.LogWarning("Sport type with name: {Name} already exists", request.Name);
-                 return Result.Failure<UpdateSportTypeCommandResponse>(new Error("SportTypeNameExist", $"Sport type with name: {request.Name} already exists"));
-             }
 
              var sportTypeResult = await _sportTypeRepository.GetByIdAsync(request.Id);
              if (sportTypeResult.HasNoValue)
              {
                  _logger.LogWarning("Sport type with id: {Id} not found", request.Id);
-                 return Result.Failure<UpdateSportTypeCommandResponse>(new Error("SportTypeNotFound", $"Sport type with id: {request.Id} not found"));
+                 throw new NotFoundException(new Error("SportTypeNotFound", $"Sport type with id: {request.Id} not found"));
              }
+
+             var exist = await _sportTypeRepository.IsDuplicateNameAsync(request.Id,request.Name);
+             if (exist)
+             {
+                 _logger.LogWarning("Sport type with name: {Name} already exists", request.Name);
+                 return Result.Failure<UpdateSportTypeCommandResponse>(new Error("SportTypeNameExist", $"Sport type with name: {request.Name} already exists"));
+             }             
 
              var sportType = sportTypeResult.Value;
 

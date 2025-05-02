@@ -125,6 +125,7 @@ namespace Codecaine.Common.AspNetCore.Middleware
                 AuthenticationException  => (HttpStatusCode.Unauthorized, new[] { AuthenticationErrors.UnauthorizedUser }),
                 ApplicationLayerException serviceApplicationException => (HttpStatusCode.InternalServerError, new[] { serviceApplicationException.Error }),
                 InfrastructureException serviceInfrastructureException => (HttpStatusCode.InternalServerError, new[] { serviceInfrastructureException.Error }),
+                NotFoundException notFoundException => (HttpStatusCode.NotFound, new[] { notFoundException.Error }),
 
                 _ => (HttpStatusCode.InternalServerError, new[] { GeneralErrors.ServerError })
             };

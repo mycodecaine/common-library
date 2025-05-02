@@ -81,6 +81,10 @@ namespace Codecaine.Common.CQRS.Base
             {                
                 throw; // Re throw the original exception.
             }
+            catch (NotFoundException)
+            {
+                throw;
+            }
             
             catch (Exception ex)
             {

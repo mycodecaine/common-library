@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace Codecaine.SportService.Application.UseCases.SportTypes.Commands.UpdateSportType
 {
-    internal class UpdateSportTypeCommandResponse
-    {
-    }
+    public record UpdateSportTypeCommandResponse
+    ();
 }
