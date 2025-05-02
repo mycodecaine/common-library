@@ -1,12 +1,14 @@
 ﻿using Asp.Versioning;
 using Codecaine.Common.Errors;
+using Codecaine.Common.Primitives.Maybe;
 using Codecaine.Common.Primitives.Result;
 using Codecaine.SportService.Application.UseCases.SportTypes.Commands.CreateSportType;
 using Codecaine.SportService.Application.UseCases.SportTypes.Commands.DeleteSportType;
 using Codecaine.SportService.Application.UseCases.SportTypes.Commands.UpdateSportType;
+using Codecaine.SportService.Application.UseCases.SportTypes.Queries.GetSportTypeById;
+using Codecaine.SportService.Application.ViewModels;
 using Codecaine.SportService.Presentation.WebApi.DTOs.SportTypes;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Codecaine.SportService.Presentation.WebApi.Controllers
@@ -72,5 +74,20 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
             .Map(request => new DeleteSportTypeCommand(id))
             .Bind(command => Mediator.Send(command))
             .Match(Ok, BadRequest);
+
+
+        /// <summary>
+        /// Get by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(SportTypeViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetById(Guid id) =>
+         await Maybe<GetSportTypeByIdQuery>
+             .From(new GetSportTypeByIdQuery(id))
+             .Bind(query => Mediator.Send(query))
+             .Match(Ok, NotFound);
     }
 }
