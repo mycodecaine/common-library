@@ -12,7 +12,7 @@ namespace Codecaine.SportService.Application.UseCases.SportTypes.Commands.Create
     /// <summary>
     /// Command handler for creating a sport type.
     /// </summary>
-    internal sealed class CreateSportTypeCommandHandler : CommandHandler<CreateSportTypeCommand, Result<CreateSportTypeCommandResponse>>
+    public sealed class CreateSportTypeCommandHandler : CommandHandler<CreateSportTypeCommand, Result<CreateSportTypeCommandResponse>>
     {
         private readonly ILogger<CreateSportTypeCommandHandler> _logger;
         private readonly ISportTypeRepository _sportTypeRepository;
@@ -44,7 +44,7 @@ namespace Codecaine.SportService.Application.UseCases.SportTypes.Commands.Create
         public override async Task<Result<CreateSportTypeCommandResponse>> Handle(CreateSportTypeCommand request, CancellationToken cancellationToken) =>
          await HandleSafelyAsync(async () =>
          {
-             var exist = await _sportTypeRepository.IsNameExist(request.Name);
+             var exist = await _sportTypeRepository.IsNameExistAsync(request.Name);
              if (exist)
              {
                  _logger.LogWarning("Sport type with name: {Name} already exists", request.Name);

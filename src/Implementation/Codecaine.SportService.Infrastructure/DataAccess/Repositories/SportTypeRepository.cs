@@ -17,9 +17,16 @@ namespace Codecaine.SportService.Infrastructure.DataAccess.Repositories
         {
         }
 
-        public Task<bool> IsNameExist(string name)
+        public Task<bool> IsDuplicateNameAsync(Guid id, string name)
+        {
+           return AnyAsync(new SportTypeDuplicateNameWithDifferentIdSpecification(name, id));
+        }
+
+        public Task<bool> IsNameExistAsync(string name)
         {
             return AnyAsync(new SportTypeWithNameSpecification(name));
         }
+
+       
     }
 }
