@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Codecaine.SportService.Application.UseCases.SportTypes.Commands.UpdateSportType
 {
-    internal class UpdateSportTypeCommandHandler : CommandHandler<UpdateSportTypeCommand, Result<UpdateSportTypeCommandResponse>>
+    internal class UpdateSportTypeCommandHandler : CommandHandler<UpdateSportTypeCommand, Result>
     {
         private readonly ILogger<UpdateSportTypeCommandHandler> _logger;
         private readonly ISportTypeRepository _sportTypeRepository;
@@ -31,7 +31,7 @@ namespace Codecaine.SportService.Application.UseCases.SportTypes.Commands.Update
             _unitOfWork = unitOfWork;
             _requestContext = requestContext;
         }
-        public async override Task<Result<UpdateSportTypeCommandResponse>> Handle(UpdateSportTypeCommand request, CancellationToken cancellationToken)=>
+        public async override Task<Result> Handle(UpdateSportTypeCommand request, CancellationToken cancellationToken)=>
          await HandleSafelyAsync(async () =>
          {
 
@@ -46,7 +46,7 @@ namespace Codecaine.SportService.Application.UseCases.SportTypes.Commands.Update
              if (exist)
              {
                  _logger.LogWarning("Sport type with name: {Name} already exists", request.Name);
-                 return Result.Failure<UpdateSportTypeCommandResponse>(new Error("SportTypeNameExist", $"Sport type with name: {request.Name} already exists"));
+                 return Result.Failure(new Error("SportTypeNameExist", $"Sport type with name: {request.Name} already exists"));
              }             
 
              var sportType = sportTypeResult.Value;

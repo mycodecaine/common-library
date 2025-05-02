@@ -29,7 +29,7 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
               .Match(Ok, BadRequest);
 
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(CreateSportTypeCommandResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Update(Guid id,[FromBody] SportTypeDto request) =>

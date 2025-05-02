@@ -15,5 +15,5 @@ namespace Codecaine.SportService.Application.UseCases.SportTypes.Commands.Update
     /// <param name="Name"></param>
     /// <param name="Description"></param>
     /// <param name="ImageUrl"></param>
-    public record UpdateSportTypeCommand(Guid Id, string Name, string Description, string ImageUrl) : ICommand<Result<UpdateSportTypeCommandResponse>>;
+    public record UpdateSportTypeCommand(Guid Id, string Name, string Description, string ImageUrl) : ICommand<Result>;
 }
