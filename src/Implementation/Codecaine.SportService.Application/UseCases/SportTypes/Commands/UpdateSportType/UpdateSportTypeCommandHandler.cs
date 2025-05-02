@@ -60,7 +60,7 @@ namespace Codecaine.SportService.Application.UseCases.SportTypes.Commands.Update
              await _unitOfWork.SaveChangesAsync(_requestContext.UserId, cancellationToken);
              _logger.LogInformation("Sport type with name: {Name} created", request.Name);
 
-             return Result.Success(new UpdateSportTypeCommandResponse());
+             return Result.Success();
 
          });
     }

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Codecaine.Common.CQRS.Commands;
+using Codecaine.Common.Primitives.Result;
 
 namespace Codecaine.SportService.Application.UseCases.SportTypes.Commands.DeleteSportType
 {
-    internal class DeleteSportTypeCommand
-    {
-    }
+    public record DeleteSportTypeCommand(Guid Id) : ICommand<Result>;
 }
