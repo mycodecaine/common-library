@@ -6,6 +6,7 @@ using Codecaine.SportService.Application.UseCases.SportTypes.Commands.CreateSpor
 using Codecaine.SportService.Application.UseCases.SportTypes.Commands.DeleteSportType;
 using Codecaine.SportService.Application.UseCases.SportTypes.Commands.UpdateSportType;
 using Codecaine.SportService.Application.UseCases.SportTypes.Queries.GetSportTypeById;
+using Codecaine.SportService.Application.UseCases.SportTypes.Queries.SearchSportTypeByName;
 using Codecaine.SportService.Application.ViewModels;
 using Codecaine.SportService.Presentation.WebApi.DTOs.SportTypes;
 using MediatR;
@@ -87,6 +88,15 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
         public async Task<IActionResult> GetById(Guid id) =>
          await Maybe<GetSportTypeByIdQuery>
              .From(new GetSportTypeByIdQuery(id))
+             .Bind(query => Mediator.Send(query))
+             .Match(Ok, NotFound);
+
+        [HttpGet("search-by-name/page/{page}/pageSize/{pageSize}/name/{name?}")]
+        [ProducesResponseType(typeof(SportTypeViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SearchByName(int page,int pageSize, string name=" ") =>
+         await Maybe<SearchSportTypeByNameQuery>
+             .From(new SearchSportTypeByNameQuery(page,pageSize,name))
              .Bind(query => Mediator.Send(query))
              .Match(Ok, NotFound);
     }

@@ -1,10 +1,12 @@
 ﻿using Codecaine.Common.Domain;
+using Codecaine.Common.Pagination.Interfaces;
 using Codecaine.Common.Persistence.EfCore.Interfaces;
 using Codecaine.Common.Primitives.Maybe;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -131,6 +133,37 @@ namespace Codecaine.Common.Persistence.EfCore
             var query = Task.Run(() => data.Where(filter.Combine()).OrderByMember(orderBy, isDecending).GetPaged(pageNumber, itemsPerPage));
 
             return query;
+        }
+
+        public async Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, ISpecification<TEntity>? specification = null, string? sortBy = null, bool sortDescending = false, CancellationToken cancellationToken = default)
+        {
+            IQueryable<TEntity> query = DbContext.Set<TEntity>();
+
+            if (specification != null)
+            {
+                query = query.Where(specification.Criteria);
+            }
+
+            var skip = (page - 1) * pageSize;
+
+            if (!string.IsNullOrWhiteSpace(sortBy))
+            {
+                var parameter = Expression.Parameter(typeof(TEntity), "x");
+                var property = Expression.Property(parameter, sortBy);
+                var lambda = Expression.Lambda(property, parameter);
+
+                string method = sortDescending ? "OrderByDescending" : "OrderBy";
+                var methodCall = typeof(Queryable).GetMethods()
+                    .First(m => m.Name == method && m.GetParameters().Length == 2)
+                    .MakeGenericMethod(typeof(TEntity), property.Type);
+
+                query = (IQueryable<TEntity>)methodCall.Invoke(null, new object[] { query, lambda })!;
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+            var items = await query.Skip(skip).Take(pageSize).ToListAsync(cancellationToken);
+
+            return (items, totalCount);
         }
     }
 }

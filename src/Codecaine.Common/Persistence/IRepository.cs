@@ -1,4 +1,5 @@
 ﻿using Codecaine.Common.Domain;
+using Codecaine.Common.Pagination.Interfaces;
 using Codecaine.Common.Primitives.Maybe;
 
 namespace Codecaine.Common.Persistence
@@ -58,5 +59,13 @@ namespace Codecaine.Common.Persistence
         /// <param name="filter">The filter criteria for querying entities.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="PagedResult{TEntity}"/>.</returns>
         Task<PagedResult<TEntity>> PaginationAsync(int pageNumber, int itemsPerPage, string orderBy, bool isDecending, QueryFilter<TEntity> filter);
+
+        Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(
+        int page,
+        int pageSize,
+        ISpecification<TEntity>? specification = null,
+        string? sortBy = null,
+        bool sortDescending = false,
+        CancellationToken cancellationToken = default);
     }
 }
