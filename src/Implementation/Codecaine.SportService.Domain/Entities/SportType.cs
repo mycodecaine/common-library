@@ -1,5 +1,6 @@
 ﻿using Codecaine.Common.Domain;
 using Codecaine.Common.Domain.Interfaces;
+using Codecaine.SportService.Domain.Events;
 
 namespace Codecaine.SportService.Domain.Entities
 {
@@ -43,7 +44,10 @@ namespace Codecaine.SportService.Domain.Entities
 
         public static SportType Create(string name, string description, string imageUrl)
         {
-            return new SportType(name, description, imageUrl);
+            var  sportType = new SportType(name, description, imageUrl);
+            sportType.AddDomainEvent(new SportTypeCreatedDomainEvent(sportType));
+
+            return sportType;
         }
 
         public void Update(string name, string description, string imageUrl)

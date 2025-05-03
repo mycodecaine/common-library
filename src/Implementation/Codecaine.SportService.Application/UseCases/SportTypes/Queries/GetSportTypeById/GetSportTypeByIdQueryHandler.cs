@@ -1,16 +1,9 @@
 ﻿using AutoMapper;
 using Codecaine.Common.CQRS.Base;
-using Codecaine.Common.CQRS.Queries;
 using Codecaine.Common.Primitives.Maybe;
-using Codecaine.SportService.Application.UseCases.SportTypes.Commands.CreateSportType;
 using Codecaine.SportService.Application.ViewModels;
 using Codecaine.SportService.Domain.Repositories;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Codecaine.SportService.Application.UseCases.SportTypes.Queries.GetSportTypeById
 {

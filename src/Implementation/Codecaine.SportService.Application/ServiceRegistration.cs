@@ -1,4 +1,5 @@
 ﻿using Codecaine.Common.Behaviours;
+using Codecaine.Common.EventConsumer;
 using Codecaine.SportService.Application.Mappers;
 using FluentValidation;
 using MediatR;
@@ -14,6 +15,8 @@ namespace Codecaine.SportService.Application
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+
+           
 
             // Auto mapper
             services.AddAutoMapper(typeof(MappingProfile).Assembly);

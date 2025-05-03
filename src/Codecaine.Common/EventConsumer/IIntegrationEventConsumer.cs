@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Codecaine.Common.CQRS.Events;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Codecaine.Common.CQRS.Events
+namespace Codecaine.Common.EventConsumer
 {
     /// <summary>
     /// Defines a contract for consuming integration events.
