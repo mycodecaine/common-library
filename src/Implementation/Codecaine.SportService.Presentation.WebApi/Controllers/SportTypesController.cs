@@ -91,9 +91,15 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
              .Bind(query => Mediator.Send(query))
              .Match(Ok, NotFound);
 
-        [HttpGet("search-by-name/page/{page}/pageSize/{pageSize}/name/{name?}")]
-        [ProducesResponseType(typeof(SportTypeViewModel), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        /// <summary>
+        /// Search by name
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        [HttpGet("page/{page}/pageSize/{pageSize}/name/{name?}")]
+        [ProducesResponseType(typeof(SportTypeViewModel), StatusCodes.Status200OK)]        
         public async Task<IActionResult> SearchByName(int page,int pageSize, string name=" ") =>
          await Maybe<SearchSportTypeByNameQuery>
              .From(new SearchSportTypeByNameQuery(page,pageSize,name))

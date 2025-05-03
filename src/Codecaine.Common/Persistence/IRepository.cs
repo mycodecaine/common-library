@@ -40,14 +40,7 @@ namespace Codecaine.Common.Persistence
         /// Removes an entity from the repository.
         /// </summary>
         /// <param name="entity">The entity to remove.</param>
-        void Remove(TEntity entity);
-
-        /// <summary>
-        /// Retrieves a queryable collection of entities that match the specified filter.
-        /// </summary>
-        /// <param name="filter">The filter criteria for querying entities.</param>
-        /// <returns>A task that represents the asynchronous operation. The task result contains an <see cref="IQueryable{TEntity}"/>.</returns>
-        Task<IQueryable<TEntity>> GetQueryableAsync(QueryFilter<TEntity> filter);
+        void Remove(TEntity entity);        
 
         /// <summary>
         /// Retrieves a paginated result of entities that match the specified filter and sorting criteria.
@@ -58,8 +51,7 @@ namespace Codecaine.Common.Persistence
         /// <param name="isDecending">Indicates whether the sorting should be in descending order.</param>
         /// <param name="filter">The filter criteria for querying entities.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a <see cref="PagedResult{TEntity}"/>.</returns>
-        Task<PagedResult<TEntity>> PaginationAsync(int pageNumber, int itemsPerPage, string orderBy, bool isDecending, QueryFilter<TEntity> filter);
-
+       
         Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(
         int page,
         int pageSize,

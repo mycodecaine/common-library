@@ -38,20 +38,11 @@ namespace Codecaine.SportService.Application.UseCases.SportTypes.Queries.SearchS
                });
              }
 
-             var queryFilter = new QueryFilter
-             {
-                 Page = request.Page,
-                 PageSize = request.PageSize,
-                 SortBy =  nameof(SportTypeViewModel.Name),
-                 SortDescending = false,
-                 Filters = filterCriterion
-             };
-
              var specification = SpecificationBuilder.Build<SportType>(filterCriterion);
 
-             var (Items, TotalCount) = await _sportTypeRepository.GetPagedAsync(queryFilter.Page, queryFilter.PageSize, specification,queryFilter.SortBy,queryFilter.SortDescending);            
+             var (Items, TotalCount) = await _sportTypeRepository.GetPagedAsync(request.Page, request.PageSize, specification, nameof(SportTypeViewModel.Name), false);            
              var viewModels = _mapper.Map<List<SportTypeViewModel>>(Items);
-             var pagedResult = viewModels.GetPaged(TotalCount, queryFilter.Page, queryFilter.PageSize);            
+             var pagedResult = viewModels.GetPaged(TotalCount, request.Page, request.PageSize);            
              return pagedResult;
          });
     }

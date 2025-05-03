@@ -60,23 +60,6 @@ namespace Codecaine.Common.Persistence.EfCore
         public void Insert(TEntity entity) => DbContext.Insert(entity);
 
         /// <summary>
-        /// Paginates the entities that match the specified filter.
-        /// </summary>
-        /// <param name="pageNumber">The page number to retrieve.</param>
-        /// <param name="itemsPerPage">The number of items per page.</param>
-        /// <param name="orderBy">The property to order by.</param>
-        /// <param name="isDecending">Whether to order in descending order.</param>
-        /// <param name="filter">The filter to apply to the query.</param>
-        /// <returns>A paginated result of entities that match the specified filter.</returns>
-        public async Task<PagedResult<TEntity>> Pagination(int pageNumber, int itemsPerPage, string orderBy, bool isDecending, QueryFilter<TEntity> filter)
-        {
-            var data = DbContext.Set<TEntity>().AsQueryable();
-            var query = await Task.Run(() => data.Where(filter.Combine()).OrderByMember(orderBy, isDecending).GetPaged(pageNumber, itemsPerPage));
-
-            return query;
-        }
-
-        /// <summary>
         /// Updates the specified entity in the database.
         /// </summary>
         /// <param name="entity">The entity to update.</param>
@@ -107,34 +90,25 @@ namespace Codecaine.Common.Persistence.EfCore
         }
 
         /// <summary>
-        /// Gets a queryable collection of entities that match the specified filter.
+        /// Gets a list of entities that meet the specified specification.
         /// </summary>
-        /// <param name="filter">The filter to apply to the query.</param>
-        /// <returns>A queryable collection of entities that match the specified filter.</returns>
-        public Task<IQueryable<TEntity>> GetQueryableAsync(QueryFilter<TEntity> filter)
+        /// <param name="specification"></param>
+        /// <returns></returns>
+        protected async Task<Maybe<List<TEntity>>> Where(Specification<TEntity> specification)
         {
-            var dataQ = DbContext.Set<TEntity>().AsQueryable();
-            var data = Task.Run(() => dataQ.Where(filter.Combine()));
-            return data;
+            return await DbContext.Set<TEntity>().Where(specification).ToListAsync();
         }
 
         /// <summary>
-        /// Paginates the entities that match the specified filter.
+        /// Gets a paginated list of entities based on the specified parameters.
         /// </summary>
-        /// <param name="pageNumber">The page number to retrieve.</param>
-        /// <param name="itemsPerPage">The number of items per page.</param>
-        /// <param name="orderBy">The property to order by.</param>
-        /// <param name="isDecending">Whether to order in descending order.</param>
-        /// <param name="filter">The filter to apply to the query.</param>
-        /// <returns>A paginated result of entities that match the specified filter.</returns>
-        public Task<PagedResult<TEntity>> PaginationAsync(int pageNumber, int itemsPerPage, string orderBy, bool isDecending, QueryFilter<TEntity> filter)
-        {
-            var data = DbContext.Set<TEntity>().AsQueryable();
-            var query = Task.Run(() => data.Where(filter.Combine()).OrderByMember(orderBy, isDecending).GetPaged(pageNumber, itemsPerPage));
-
-            return query;
-        }
-
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="specification"></param>
+        /// <param name="sortBy"></param>
+        /// <param name="sortDescending"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, ISpecification<TEntity>? specification = null, string? sortBy = null, bool sortDescending = false, CancellationToken cancellationToken = default)
         {
             IQueryable<TEntity> query = DbContext.Set<TEntity>();
