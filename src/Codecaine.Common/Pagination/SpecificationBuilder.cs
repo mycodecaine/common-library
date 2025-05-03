@@ -18,11 +18,13 @@ namespace Codecaine.Common.Pagination
             foreach (var filter in filters)
             {
                 var current = ToSpecification<T>(filter);
+#pragma warning disable S3358 // Ternary operators should not be nested
                 spec = spec == null
                     ? current
                     : (filter.Logic == FilterLogic.And
                         ? new AndSpecification<T>(spec, current)
                         : new OrSpecification<T>(spec, current));
+#pragma warning restore S3358 // Ternary operators should not be nested
             }
 
             return spec;
