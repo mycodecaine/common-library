@@ -1,4 +1,5 @@
-﻿using Codecaine.Common.CQRS.Base;
+﻿using AutoMapper;
+using Codecaine.Common.CQRS.Base;
 using Codecaine.Common.CQRS.Queries;
 using Codecaine.Common.Primitives.Maybe;
 using Codecaine.SportService.Application.UseCases.SportTypes.Commands.CreateSportType;
@@ -17,11 +18,13 @@ namespace Codecaine.SportService.Application.UseCases.SportTypes.Queries.GetSpor
     {
         private readonly ILogger<GetSportTypeByIdQueryHandler> _logger;
         private readonly ISportTypeRepository _sportTypeRepository;
+        private readonly IMapper _mapper;
 
-        public GetSportTypeByIdQueryHandler(ILogger<GetSportTypeByIdQueryHandler> logger, ISportTypeRepository sportTypeRepository) : base(logger)
+        public GetSportTypeByIdQueryHandler(ILogger<GetSportTypeByIdQueryHandler> logger, ISportTypeRepository sportTypeRepository, IMapper mapper) : base(logger)
         {
             _logger = logger;
             _sportTypeRepository = sportTypeRepository;
+            _mapper = mapper;
         }
 
         public override async Task<Maybe<SportTypeViewModel>> Handle(GetSportTypeByIdQuery request, CancellationToken cancellationToken) =>
@@ -35,15 +38,7 @@ namespace Codecaine.SportService.Application.UseCases.SportTypes.Queries.GetSpor
              }
 
              var sportType = sportTypeResult.Value;
-             var sportTypeViewModel = new SportTypeViewModel
-             (
-                  sportType.Id,
-                  sportType.Name,
-                  sportType.Description,
-                  sportType.ImageUrl
-
-             );
-
+             var sportTypeViewModel = _mapper.Map<SportTypeViewModel>(sportType);
              return sportTypeViewModel;
          });
     }
