@@ -16,7 +16,11 @@
       "environmentVariables": {
         "ASPNETCORE_HTTPS_PORT": "7283",
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "ConnectionString__DataBase": "Server=127.0.0.1;Database=SportDb;User=sa;Password=P@ssW0rd;TrustServerCertificate=True"
+        "ConnectionString__DataBase": "Server=127.0.0.1;Database=SportDb;User=sa;Password=P@ssW0rd;TrustServerCertificate=True",
+        "RabbitMq__Host": "localhost",
+        "RabbitMq__UserName": "guest",
+        "RabbitMq__Password": "guest",
+        "RabbitMq__DefaultQueueName": "codecaine-message"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7283;http://localhost:5077"

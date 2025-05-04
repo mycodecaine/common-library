@@ -49,24 +49,34 @@ namespace Codecaine.SportService.Infrastructure
 
         public static IServiceCollection AddMassTransitRabbitMq(this IServiceCollection services)
         {
+            string host = Environment.GetEnvironmentVariable("RabbitMq__Host") ?? "";
+            string userName = Environment.GetEnvironmentVariable("RabbitMq__UserName") ?? "";
+            string password = Environment.GetEnvironmentVariable("RabbitMq__Password") ?? "";
+            string defaultQueueName = Environment.GetEnvironmentVariable("RabbitMq__DefaultQueueName") ?? "";
+
+
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<CodecaineMessageConsumer>(); // Register Consumer
 
+                // Add multiple consumers if needed
+
                 x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host("localhost", "/", h =>
+                    cfg.Host(host, "/", h =>
                     {
-                        h.Username("guest");
-                        h.Password("guest");
+                        h.Username(userName);
+                        h.Password(password);
                     });
 
                     cfg.UseRawJsonSerializer();
 
-                    cfg.ReceiveEndpoint("codecaine-message", e =>
+                    cfg.ReceiveEndpoint(defaultQueueName, e =>
                     {
                         e.ConfigureConsumer<CodecaineMessageConsumer>(context);
                     });
+
+                    // Configure other consumers here
 
                     cfg.ConfigureEndpoints(context);
                 });
