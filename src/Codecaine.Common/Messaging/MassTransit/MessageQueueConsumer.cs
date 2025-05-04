@@ -7,12 +7,12 @@ using Newtonsoft.Json;
 
 namespace Codecaine.Common.Messaging.MassTransit
 {
-    public class MessageQueueConsumer : IConsumer<MessageWrapper>
+    public abstract class MessageQueueConsumer : IConsumer<MessageWrapper>
     {
         private readonly ILogger<MessageQueueConsumer> _logger;
         private readonly IServiceProvider _serviceProvider;
 
-        public MessageQueueConsumer(ILogger<MessageQueueConsumer> logger, IServiceProvider serviceProvider)
+        protected MessageQueueConsumer(ILogger<MessageQueueConsumer> logger, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _serviceProvider = serviceProvider;
@@ -20,7 +20,7 @@ namespace Codecaine.Common.Messaging.MassTransit
 
         public Task Consume(ConsumeContext<MessageWrapper> context)
         {
-            _logger.LogInformation($"UserProfile RabbitMQ Queue trigger function processed: {context.Message.Message}");
+            _logger.LogInformation("MessageQueueConsumer : {Message}", context.Message.Message);
 
             var integrationEvent = JsonConvert.DeserializeObject<IIntegrationEvent>(context.Message.Message, new JsonSerializerSettings
             {

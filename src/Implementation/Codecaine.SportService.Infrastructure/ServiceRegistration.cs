@@ -8,6 +8,7 @@ using Codecaine.Common.Persistence.EfCore.Interfaces;
 using Codecaine.SportService.Domain.Repositories;
 using Codecaine.SportService.Infrastructure.DataAccess;
 using Codecaine.SportService.Infrastructure.DataAccess.Repositories;
+using Codecaine.SportService.Infrastructure.Messaging;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,7 +51,7 @@ namespace Codecaine.SportService.Infrastructure
         {
             services.AddMassTransit(x =>
             {
-                x.AddConsumer<MessageQueueConsumer>(); // Register Consumer
+                x.AddConsumer<CodecaineMessageConsumer>(); // Register Consumer
 
                 x.UsingRabbitMq((context, cfg) =>
                 {
@@ -64,7 +65,7 @@ namespace Codecaine.SportService.Infrastructure
 
                     cfg.ReceiveEndpoint("codecaine-message", e =>
                     {
-                        e.ConfigureConsumer<MessageQueueConsumer>(context);
+                        e.ConfigureConsumer<CodecaineMessageConsumer>(context);
                     });
 
                     cfg.ConfigureEndpoints(context);

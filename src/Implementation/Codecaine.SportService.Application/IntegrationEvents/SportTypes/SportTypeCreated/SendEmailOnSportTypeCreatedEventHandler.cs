@@ -15,7 +15,7 @@ namespace Codecaine.SportService.Application.IntegrationEvents.SportTypes.SportT
 
         public Task Handle(SportTypeCreatedEvent notification, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"SendEmailOnSportTypeCreatedEventHandler SportTypeId: {notification.SportTypeId}");
+            _logger.LogInformation("SendEmailOnSportTypeCreatedEventHandler SportTypeId: {SportTypeId}", notification.SportTypeId);            
             return Task.CompletedTask;
         }
     }
