@@ -8,10 +8,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Codecaine.SportService.Domain\Codecaine.SportService.Domain.csproj" />
+	  <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+		  <_Parameter1>Codecaine.Implimentation.Tests</_Parameter1>
+	  </AssemblyAttribute>
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="UseCases\SportVariants\" />
+    <Folder Include="UseCases\SportVariants\Events\" />
+    <Folder Include="UseCases\SportVariants\Queries\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,5 +10,7 @@ namespace Codecaine.SportService.Domain.Repositories
 {
     public interface ISportVariantRepository:IRepository<SportVariant>
     {
+        Task<bool> IsNameExistAsync( Guid sportTypeId, string name);
+        Task<bool> IsDuplicateNameAsync(Guid id, Guid sportTypeId, string name);
     }
 }

@@ -17,7 +17,7 @@ namespace Codecaine.SportService.Application.UseCases.SportTypes.Commands.Delete
 {
     
 
-    internal class DeleteSportTypeCommandHandler : CommandHandler<DeleteSportTypeCommand, Result>
+    internal sealed class DeleteSportTypeCommandHandler : CommandHandler<DeleteSportTypeCommand, Result>
     {
         private readonly ILogger<DeleteSportTypeCommandHandler> _logger;
         private readonly ISportTypeRepository _sportTypeRepository;

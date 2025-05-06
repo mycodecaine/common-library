@@ -3,6 +3,8 @@ using Codecaine.Common.Persistence.EfCore.Interfaces;
 using Codecaine.Common.Primitives.Maybe;
 using Codecaine.SportService.Domain.Entities;
 using Codecaine.SportService.Domain.Repositories;
+using Codecaine.SportService.Infrastructure.DataAccess.Specifications.SportTypes;
+using Codecaine.SportService.Infrastructure.DataAccess.Specifications.SportVariants;
 using MassTransit.Transports;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +20,16 @@ namespace Codecaine.SportService.Infrastructure.DataAccess.Repositories
         {
             var order = await DbContext.Set<SportVariant>().Include(a => a.SportType ).FirstOrDefaultAsync(x => x.Id == id);
             return order;
+        }
+
+        public Task<bool> IsDuplicateNameAsync(Guid id, Guid sportTypeId, string name)
+        {
+            return AnyAsync(new SportVariantDuplicateNameWithDifferentIdSpecification(name,id, sportTypeId));
+        }
+
+        public Task<bool> IsNameExistAsync(Guid sportTypeId, string name)
+        {
+            return AnyAsync(new SportVariantWithNameSpecification(  name, sportTypeId));
         }
     }
     

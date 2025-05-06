@@ -93,10 +93,12 @@ namespace Codecaine.SportService.Domain.Entities
         /// Adds a country to the list of countries where this sport variant is popular.  
         /// </summary>  
         /// <param name="popularInCountry">The country code to add.</param>  
-        public void AddPopularInCountry(PopularInCountry popularInCountry)
+        public void AddPopularInCountry(CountryCode countryCode, int popularity)
         {
-            if (_popularInCountries.Any(x=>x.CountryCode == popularInCountry.CountryCode))
+            if (_popularInCountries.Any(x=>x.CountryCode == countryCode))
                 return;
+
+            var popularInCountry = new PopularInCountry(countryCode, popularity);
             _popularInCountries.Add(popularInCountry);
         }
 
@@ -104,9 +106,9 @@ namespace Codecaine.SportService.Domain.Entities
         /// Removes a country from the list of countries where this sport variant is popular.  
         /// </summary>  
         /// <param name="countryCode">The country code to remove.</param>  
-        public void RemovePopularInCountry(PopularInCountry popularInCountry)
+        public void RemovePopularInCountry(CountryCode countryCode)
         {
-            var country = _popularInCountries.FirstOrDefault(x => x.CountryCode == popularInCountry.CountryCode);
+            var country = _popularInCountries.FirstOrDefault(x => x.CountryCode == countryCode);
             if (country is null)
                 return;
             _popularInCountries.Remove(country);
