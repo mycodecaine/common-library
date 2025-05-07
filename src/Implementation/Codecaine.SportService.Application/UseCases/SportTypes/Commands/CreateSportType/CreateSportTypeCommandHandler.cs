@@ -12,7 +12,7 @@ namespace Codecaine.SportService.Application.UseCases.SportTypes.Commands.Create
     /// <summary>
     /// Command handler for creating a sport type.
     /// </summary>
-    public sealed class CreateSportTypeCommandHandler : CommandHandler<CreateSportTypeCommand, Result<CreateSportTypeCommandResponse>>
+    internal sealed class CreateSportTypeCommandHandler : CommandHandler<CreateSportTypeCommand, Result<CreateSportTypeCommandResponse>>
     {
         private readonly ILogger<CreateSportTypeCommandHandler> _logger;
         private readonly ISportTypeRepository _sportTypeRepository;

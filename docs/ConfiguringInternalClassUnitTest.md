@@ -11,6 +11,9 @@ In your project's ``.csproj`` file add this
   <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
     <_Parameter1>YourTestProjectName</_Parameter1>
   </AssemblyAttribute>
+  <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+		  <_Parameter1>DynamicProxyGenAssembly2</_Parameter1> <---- Required for moq
+	  </AssemblyAttribute>
 </ItemGroup>
 
 ```
@@ -23,6 +26,9 @@ Example
     <ProjectReference Include="..\Codecaine.SportService.Domain\Codecaine.SportService.Domain.csproj" />
 	  <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
 		  <_Parameter1>Codecaine.Implimentation.Tests</_Parameter1>
+	  </AssemblyAttribute>
+    <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+		  <_Parameter1>DynamicProxyGenAssembly2</_Parameter1> 
 	  </AssemblyAttribute>
   </ItemGroup>
 
