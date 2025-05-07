@@ -1,4 +1,4 @@
-﻿using Codecaine.SportService.Application.UseCases.SportVariants.Commands.CreateSportVariant.DTOs;
+﻿using Codecaine.SportService.Application.DTOs;
 using Codecaine.SportService.Domain.Enumerations;
 
 namespace Codecaine.SportService.Presentation.WebApi.DTOs.SportVariants

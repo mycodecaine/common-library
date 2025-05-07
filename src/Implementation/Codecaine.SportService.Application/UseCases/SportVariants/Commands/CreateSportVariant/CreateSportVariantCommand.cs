@@ -1,6 +1,6 @@
 ﻿using Codecaine.Common.CQRS.Commands;
 using Codecaine.Common.Primitives.Result;
-using Codecaine.SportService.Application.UseCases.SportVariants.Commands.CreateSportVariant.DTOs;
+using Codecaine.SportService.Application.DTOs;
 using Codecaine.SportService.Domain.Enumerations;
 using System;
 using System.Collections.Generic;

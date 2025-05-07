@@ -1,5 +1,6 @@
 ﻿using Codecaine.Common.Abstractions;
 using Codecaine.Common.CQRS.Base;
+using Codecaine.Common.Exceptions;
 using Codecaine.Common.Persistence;
 using Codecaine.Common.Primitives.Errors;
 using Codecaine.Common.Primitives.Result;
@@ -14,21 +15,32 @@ namespace Codecaine.SportService.Application.UseCases.SportVariants.Commands.Cre
     {
         private readonly ILogger<CreateSportVariantCommandHandler> _logger;
         private readonly ISportVariantRepository _sportVariantRepository;
+        private readonly ISportTypeRepository _sportTypeRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IRequestContext _requestContext;
-        public CreateSportVariantCommandHandler(ISportVariantRepository sportVariantRepository, IUnitOfWork unitOfWork,
+        public CreateSportVariantCommandHandler(ISportVariantRepository sportVariantRepository, ISportTypeRepository sportTypeRepository, IUnitOfWork unitOfWork,
              IRequestContext requestContext, ILogger<CreateSportVariantCommandHandler> logger) : base(logger)
         {
             _logger = logger;
             _sportVariantRepository = sportVariantRepository;
             _unitOfWork = unitOfWork;
             _requestContext = requestContext;
+            _sportTypeRepository = sportTypeRepository;
 
         }
 
         public async override Task<Result<CreateSportVariantCommandResponse>> Handle(CreateSportVariantCommand request, CancellationToken cancellationToken) =>
          await HandleSafelyAsync(async () =>
          {
+             // Check if sport type exists
+             var sportTypeResult = await _sportTypeRepository.GetByIdAsync(request.SportTypeId);
+             if (sportTypeResult.HasNoValue)
+             {
+                 _logger.LogWarning("Sport type with id: {Id} not found", request.SportTypeId);
+                 throw new NotFoundException(new Error("SportTypeNotFound", $"Sport type with id: {request.SportTypeId} not found"));
+             }
+
+             // Check if sport variant name already exists
              var exist = await _sportVariantRepository.IsNameExistAsync( request.SportTypeId, request.Name);
              if (exist)
              {
@@ -36,6 +48,7 @@ namespace Codecaine.SportService.Application.UseCases.SportVariants.Commands.Cre
                  return Result.Failure<CreateSportVariantCommandResponse>(new Error("SportVariantNameExist", $"Sport variant with name: {request.Name} already exists"));
              }
 
+             // Create sport rule value object
              Result<SportRule> sportRule = SportRule.Create(request.RuleScoringSystem, request.RulePlayerCount, request.RuleGameDuration, request.RuleMaxScore);
 
              Result firstFailureOrSuccess = Result.FirstFailureOrSuccess(sportRule);
