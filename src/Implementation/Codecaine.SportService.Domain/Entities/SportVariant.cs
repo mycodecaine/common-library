@@ -102,13 +102,29 @@ namespace Codecaine.SportService.Domain.Entities
             _popularInCountries.Add(popularInCountry);
         }
 
+        public void UpdatePopularInCountry(Guid? id, CountryCode countryCode, int popularity)
+        {
+            if (_popularInCountries.Any(x => x.CountryCode != countryCode ) && id == null)
+            {
+                var newPopularInCountry = new PopularInCountry(countryCode, popularity);
+                _popularInCountries.Add(newPopularInCountry);
+                return;
+            }
+
+            var updatePopularInCountry = _popularInCountries.FirstOrDefault(x => x.Id == id);
+            if (updatePopularInCountry is null)
+                return;
+
+            updatePopularInCountry.Update(countryCode, popularity);
+        }
+
         /// <summary>  
         /// Removes a country from the list of countries where this sport variant is popular.  
         /// </summary>  
         /// <param name="countryCode">The country code to remove.</param>  
-        public void RemovePopularInCountry(CountryCode countryCode)
+        public void RemovePopularInCountry(Guid id)
         {
-            var country = _popularInCountries.FirstOrDefault(x => x.CountryCode == countryCode);
+            var country = _popularInCountries.FirstOrDefault(x => x.Id == id);
             if (country is null)
                 return;
             _popularInCountries.Remove(country);
@@ -128,6 +144,20 @@ namespace Codecaine.SportService.Domain.Entities
 
             var playerPosition = new PlayerPosition(name, description, imageUrl, responsibilities);
             _playerPositions.Add(playerPosition);
+        }
+
+        public void UpdatePlayerPosition(Guid? id, string name, string description, string imageUrl, string responsibilities)
+        {
+            if (_playerPositions.Any(x => x.Name.ToLower() != name.ToLower()) && id == null)
+            {
+                var newPlayerPosition = new PlayerPosition(name, description, imageUrl, responsibilities);
+                _playerPositions.Add(newPlayerPosition);
+                return;
+            }
+            var updatePlayerPosition = _playerPositions.FirstOrDefault(x => x.Id == id);
+            if (updatePlayerPosition is null)
+                return;
+            updatePlayerPosition.Update(name, description, imageUrl, responsibilities);
         }
 
         /// <summary>  
