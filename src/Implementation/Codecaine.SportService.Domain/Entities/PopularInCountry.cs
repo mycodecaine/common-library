@@ -13,7 +13,7 @@ namespace Codecaine.SportService.Domain.Entities
         public CountryCode CountryCode { get; private set; }
         public int Popularity { get; private set; }
         // Parameterless constructor for EF Core
-        private PopularInCountry()
+        public PopularInCountry()
         {
         }
         public PopularInCountry(CountryCode countryCode, int popularity) : base(Guid.NewGuid())

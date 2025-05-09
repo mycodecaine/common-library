@@ -18,7 +18,7 @@ namespace Codecaine.SportService.Infrastructure.DataAccess.Repositories
 
         public async override Task<Maybe<SportVariant>> GetByIdAsync(Guid id)
         {
-            var order = await DbContext.Set<SportVariant>().Include(a => a.SportType ).FirstOrDefaultAsync(x => x.Id == id);
+            var order = await DbContext.Set<SportVariant>().Include(a => a.SportType ).Include(x=>x.PlayerPositions).Include(x=>x.PopularInCountries).FirstOrDefaultAsync(x => x.Id == id);
             return order;
         }
 

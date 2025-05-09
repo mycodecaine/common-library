@@ -13,8 +13,21 @@ namespace Codecaine.SportService.Application.Mappers
     {
         public MappingProfile()
         {
+            // Domain -> ViewModel
 
-            CreateMap<SportType, SportTypeViewModel>(); // Domain -> ViewModel
+            CreateMap<SportType, SportTypeViewModel>();
+
+            CreateMap<SportVariant, SportVariantViewModel>()
+               // Value Object need to Map Manually
+               .ForCtorParam("RuleScoringSystem", opt => opt.MapFrom(src => src.Rules.ScoringSystem))
+               .ForCtorParam("RulePlayerCount", opt => opt.MapFrom(src => src.Rules.PlayerCount))
+               .ForCtorParam("RuleGameDuration", opt => opt.MapFrom(src => src.Rules.Duration))
+               .ForCtorParam("RuleMaxScore", opt => opt.MapFrom(src => src.Rules.MaxScore));
+
+            CreateMap<PlayerPosition, PlayerPositionViewModel>();           
+
+            CreateMap<PopularInCountry, PopularInCountryViewModel>();
+             
 
         }
     }

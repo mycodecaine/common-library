@@ -10,7 +10,7 @@ namespace Codecaine.SportService.Domain.Entities
         public string Responsibilities { get; private set; }
 
         // Parameterless constructor for EF Core
-        private PlayerPosition()
+        public PlayerPosition()
         {
         }
 

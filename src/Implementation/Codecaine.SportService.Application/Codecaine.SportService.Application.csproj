@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <Folder Include="UseCases\SportVariants\Events\" />
-    <Folder Include="UseCases\SportVariants\Queries\" />
   </ItemGroup>
 
   <ItemGroup>
