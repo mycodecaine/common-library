@@ -58,6 +58,7 @@ namespace Codecaine.SportService.Infrastructure
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<CodecaineMessageConsumer>(); // Register Consumer
+              
 
                 // Add multiple consumers if needed
 
@@ -74,7 +75,7 @@ namespace Codecaine.SportService.Infrastructure
                     cfg.ReceiveEndpoint(defaultQueueName, e =>
                     {
                         e.ConfigureConsumer<CodecaineMessageConsumer>(context);
-                    });
+                    });                    
 
                     // Configure other consumers here
 

@@ -72,19 +72,7 @@ namespace Codecaine.SportService.Application.UseCases.SportVariants.Commands.Upd
 
              var sportVariant = sportVariantResult.Value;
 
-             sportVariant.Update(request.Name, request.Description, request.ImageUrl, request.IsOlympic, request.SportTypeId, sportRule.Value);
-             _sportVariantRepository.Update(sportVariant);
-
-             // Remove PopularInCountries if not exist in request
-             var popularContries = sportVariant.PopularInCountries.Select(x => x.Id);
-             var requestPopularCounties = request.PopularInCountries.Select(x => x.Id).Where(x => x.HasValue).Select(x => x.Value);
-
-             var missingCountryIds = popularContries.Except(requestPopularCounties);
-
-             foreach (var missingCountryId in missingCountryIds)
-             {
-                 sportVariant.RemovePopularInCountry(missingCountryId);
-             }
+             sportVariant.Update(request.Name, request.Description, request.ImageUrl, request.IsOlympic, request.SportTypeId, sportRule.Value);     
 
              // Update sport variant properties
              if (request.PopularInCountries != null && request.PopularInCountries.Count != 0)
@@ -93,17 +81,7 @@ namespace Codecaine.SportService.Application.UseCases.SportVariants.Commands.Upd
                  {
                      sportVariant.UpdatePopularInCountry(popularInCountries.Id, popularInCountries.CountryCode, popularInCountries.Popularity);
                  }
-             }
-
-             // Remove PlayerPositions if not exist in request
-             var playerPositions = sportVariant.PlayerPositions.Select(x => x.Id);
-             var requestPlayerPositions = request.PlayerPositions.Select(x => x.Id).Where(x => x.HasValue).Select(x => x.Value);
-             var missingPlayerPositionIds = playerPositions.Except(requestPlayerPositions);
-
-             foreach (var missingPlayerPositionId in missingPlayerPositionIds)
-             {
-                 sportVariant.RemovePlayerPosition(missingPlayerPositionId);
-             }
+             }             
 
              // Update player positions properties
              if (request.PlayerPositions != null && request.PlayerPositions.Count != 0)
@@ -113,11 +91,10 @@ namespace Codecaine.SportService.Application.UseCases.SportVariants.Commands.Upd
                      sportVariant.UpdatePlayerPosition(playerPosition.Id, playerPosition.Name, playerPosition.Description, playerPosition.ImageUrl, playerPosition.Responsibilities);
                  }
              }
-
              _logger.LogInformation("Creating sport variant with name: {Name}", request.Name);
-            
 
 
+             _sportVariantRepository.Update(sportVariant);
              await _unitOfWork.SaveChangesAsync(_requestContext.UserId, cancellationToken);
              _logger.LogInformation("Sport variant with name: {Name} created", request.Name);
 
