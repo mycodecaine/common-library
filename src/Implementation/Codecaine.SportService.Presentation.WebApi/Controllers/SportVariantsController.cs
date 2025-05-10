@@ -3,6 +3,7 @@ using Codecaine.Common.Errors;
 using Codecaine.Common.Primitives.Maybe;
 using Codecaine.Common.Primitives.Result;
 using Codecaine.SportService.Application.UseCases.SportVariants.Commands.CreateSportVariant;
+using Codecaine.SportService.Application.UseCases.SportVariants.Commands.RemovePopularInCountry;
 using Codecaine.SportService.Application.UseCases.SportVariants.Commands.UpdateSportVariant;
 using Codecaine.SportService.Application.UseCases.SportVariants.Queries.GetSportVariantById;
 using Codecaine.SportService.Application.ViewModels;
@@ -42,6 +43,16 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
          await Result.Create(request, GeneralErrors.UnProcessableRequest)
              .Map(request => new UpdateSportVariantCommand(id, request.Name, request.Description, request.ImageUrl,request.IsOlympic,request.SportTypeId, request.RuleScoringSystem,
                  request.RulePlayerCount,request.RuleGameDuration,request.RuleMaxScore,request.PopularInCountries,request.PlayerPositions))
+             .Bind(command => Mediator.Send(command))
+             .Match(Ok, BadRequest);
+
+        [HttpDelete("{id}/PopularInCountryId")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RemovePopularInCountry(Guid id, [FromBody] List<Guid> popularInCountryIds) =>
+         await Result.Create(popularInCountryIds, GeneralErrors.UnProcessableRequest)
+             .Map(request => new RemovePopularInCountryCommand(id, popularInCountryIds))
              .Bind(command => Mediator.Send(command))
              .Match(Ok, BadRequest);
 

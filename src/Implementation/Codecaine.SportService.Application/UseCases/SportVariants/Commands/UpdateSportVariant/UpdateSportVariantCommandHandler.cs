@@ -72,6 +72,9 @@ namespace Codecaine.SportService.Application.UseCases.SportVariants.Commands.Upd
 
              var sportVariant = sportVariantResult.Value;
 
+             sportVariant.Update(request.Name, request.Description, request.ImageUrl, request.IsOlympic, request.SportTypeId, sportRule.Value);
+             _sportVariantRepository.Update(sportVariant);
+
              // Remove PopularInCountries if not exist in request
              var popularContries = sportVariant.PopularInCountries.Select(x => x.Id);
              var requestPopularCounties = request.PopularInCountries.Select(x => x.Id).Where(x => x.HasValue).Select(x => x.Value);
@@ -112,7 +115,7 @@ namespace Codecaine.SportService.Application.UseCases.SportVariants.Commands.Upd
              }
 
              _logger.LogInformation("Creating sport variant with name: {Name}", request.Name);
-             _sportVariantRepository.Insert(sportVariant);
+            
 
 
              await _unitOfWork.SaveChangesAsync(_requestContext.UserId, cancellationToken);

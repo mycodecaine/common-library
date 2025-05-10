@@ -124,10 +124,13 @@ namespace Codecaine.SportService.Domain.Entities
         /// <param name="countryCode">The country code to remove.</param>  
         public void RemovePopularInCountry(Guid id)
         {
-            var country = _popularInCountries.FirstOrDefault(x => x.Id == id);
+            var country = _popularInCountries.SingleOrDefault(x => x.Id == id);
+            
             if (country is null)
                 return;
-            _popularInCountries.Remove(country);
+
+            var index = _popularInCountries.IndexOf(country);
+            _popularInCountries.RemoveAt(index);
         }
 
         /// <summary>  
