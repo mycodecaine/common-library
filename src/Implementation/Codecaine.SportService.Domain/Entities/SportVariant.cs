@@ -147,21 +147,7 @@ namespace Codecaine.SportService.Domain.Entities
 
             var playerPosition = new PlayerPosition(name, description, imageUrl, responsibilities);
             _playerPositions.Add(playerPosition);
-        }
-
-        public void UpdatePlayerPosition(Guid? id, string name, string description, string imageUrl, string responsibilities)
-        {
-            if (_playerPositions.Any(x => x.Name.ToLower() != name.ToLower()) && id == null)
-            {
-                var newPlayerPosition = new PlayerPosition(name, description, imageUrl, responsibilities);
-                _playerPositions.Add(newPlayerPosition);
-                return;
-            }
-            var updatePlayerPosition = _playerPositions.FirstOrDefault(x => x.Id == id);
-            if (updatePlayerPosition is null)
-                return;
-            updatePlayerPosition.Update(name, description, imageUrl, responsibilities);
-        }
+        }       
 
         /// <summary>  
         /// Removes a player position from the sport variant by its identifier.  
@@ -189,6 +175,20 @@ namespace Codecaine.SportService.Domain.Entities
             if (playerPosition is null)
                 return;
             playerPosition.Update(name, description, imageUrl, responsibilities);
+        }
+
+        public void UpdatePlayerPosition(Guid? id, string name, string description, string imageUrl, string responsibilities)
+        {
+            if (_playerPositions.Any(x => x.Name.ToLower() != name.ToLower()) && id == null)
+            {
+                var newPlayerPosition = new PlayerPosition(name, description, imageUrl, responsibilities);
+                _playerPositions.Add(newPlayerPosition);
+                return;
+            }
+            var updatePlayerPosition = _playerPositions.FirstOrDefault(x => x.Id == id);
+            if (updatePlayerPosition is null)
+                return;
+            updatePlayerPosition.Update(name, description, imageUrl, responsibilities);
         }
 
         /// <summary>  
