@@ -1,4 +1,5 @@
-﻿using Codecaine.Common.Abstractions;
+﻿using Codecaine.Common;
+using Codecaine.Common.Abstractions;
 using Codecaine.Common.Date;
 using Codecaine.Common.EventConsumer;
 using Codecaine.Common.Messaging;
@@ -33,16 +34,15 @@ namespace Codecaine.SportService.Infrastructure
 
             services.AddScoped<ISportVariantRepository, SportVariantRepository>();
 
-            services.AddTransient<IDateTime, MachineDateTime>();
-
-            // Event consumer
-            services.AddScoped<IIntegrationEventConsumer, IntegrationEventConsumer>();
+           
 
             // MassTransit Publisher
             services.AddScoped<IMessagePublisher, MessagePublisher>();
 
 
             services.AddMassTransitRabbitMq();
+
+            services.AddCommonLibrary();
 
             return services;
         }

@@ -5,6 +5,7 @@ using Codecaine.SportService.Infrastructure;
 using Codecaine.SportService.Presentation.WebApi.Context;
 using Scalar.AspNetCore;
 using Codecaine.Common.AspNetCore.Middleware;
+using Codecaine.Common;
 using Microsoft.Extensions.Options;
 
 namespace Codecaine.SportService.Presentation.WebApi
@@ -30,7 +31,7 @@ namespace Codecaine.SportService.Presentation.WebApi
 
 
             // Temporary Solution before implementing Authentication with keycloak
-            builder.Services.AddScoped<IRequestContext,RequestContext>();
+            builder.Services.AddScoped<IRequestContext, RequestContext>();
 
             var app = builder.Build();
 
@@ -39,19 +40,20 @@ namespace Codecaine.SportService.Presentation.WebApi
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
-                app.MapScalarApiReference(options => {
+                app.MapScalarApiReference(options =>
+                {
                     options.Title = "Codecaine Sport Service API";
                     options.Theme = ScalarTheme.Default;
                 });
             }
 
-           
+
 
             app.UseCodecaineCommonExceptionHandler();
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
+            app.UseCommonLibraryBuilder();
 
             app.MapControllers();
 
