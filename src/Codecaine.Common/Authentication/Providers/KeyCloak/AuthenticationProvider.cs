@@ -4,7 +4,9 @@ using Codecaine.Common.HttpServices;
 using Codecaine.Common.Primitives.Result;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Codecaine.Common.Authentication.Providers.KeyCloak
 {
@@ -25,7 +27,7 @@ namespace Codecaine.Common.Authentication.Providers.KeyCloak
         {
             _logger.LogInformation("Creating user with username: {Username}", username);
             var userEndpoint = $"{_authenticationSetting.BaseUrl}/admin/realms/{_authenticationSetting.RealmName}/users";
-            var accesstoken = await GetAdminAccessToken();
+            var accesstoken = await GetAccessToken();
             if (accesstoken.IsFailure)
             {
                 return Result.Failure<string>(AuthenticationErrors.InvalidAdminToken);
@@ -66,10 +68,18 @@ namespace Codecaine.Common.Authentication.Providers.KeyCloak
             return adminToken;
         }
 
+        private async Task<Result<string>> GetAccessToken()
+        {
+            _logger.LogInformation("Getting admin access token");
+            var adminToken = await Login(_authenticationSetting.Admin, _authenticationSetting.Password);
+            JObject content = JObject.Parse(adminToken.Value);
+            return content["access_token"]?.ToString();
+        }
+
         public async Task<Result<string>> GetIdByUserName(string userName)
         {
             var userEndpoint = $"{_authenticationSetting.BaseUrl}/admin/realms/{_authenticationSetting.RealmName}/users?username={userName}";
-            var accesstoken = await GetAdminAccessToken();
+            var accesstoken = await GetAccessToken();
             var response = await _httpService.GetAsync(userEndpoint, accesstoken.Value);
 
             if (response.IsSuccessStatusCode)
