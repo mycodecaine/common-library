@@ -1,4 +1,4 @@
-﻿using Codecaine.Common.Abstractions;
+﻿using Codecaine.Common.Exceptions;
 using Codecaine.Common.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
@@ -53,12 +53,22 @@ namespace Codecaine.Common.HttpServices
         /// <returns></returns>
         private HttpClient CreateClient(string authToken)
         {
-            var client = _httpClientFactory.CreateClientWithPolicy();
-            if (!string.IsNullOrEmpty(authToken))
+            try
             {
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+                var client = _httpClientFactory.CreateClientWithPolicy();
+                if (!string.IsNullOrEmpty(authToken))
+                {
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", authToken);
+                }
+                return client;
             }
-            return client;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+
+                throw new CommonLibraryException(new Primitives.Errors.Error("CreateHttpClientFail", $"An error occurred while creating the HTTP client: {ex.Message}"));
+
+            }
         }
     }
 }

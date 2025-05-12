@@ -22,8 +22,10 @@ namespace Codecaine.Common
             // Event consumer
             services.AddScoped<IIntegrationEventConsumer, IntegrationEventConsumer>();
 
+            // HttpService
             services.AddScoped<IHttpService, HttpService>();
 
+            // Authentication - Jwt Service
             services.AddScoped<IJwtService, JwtService>();
 
             return services;

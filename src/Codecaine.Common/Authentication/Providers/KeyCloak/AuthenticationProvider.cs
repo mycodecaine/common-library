@@ -1,8 +1,9 @@
-﻿using Codecaine.Common.Abstractions;
-using Codecaine.Common.Authentication.Providers.KeyCloak.Setting;
+﻿using Codecaine.Common.Authentication.Providers.KeyCloak.Setting;
 using Codecaine.Common.Errors;
+using Codecaine.Common.HttpServices;
 using Codecaine.Common.Primitives.Result;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 
 namespace Codecaine.Common.Authentication.Providers.KeyCloak
@@ -13,9 +14,9 @@ namespace Codecaine.Common.Authentication.Providers.KeyCloak
         private readonly IHttpService _httpService;
         private readonly ILogger<AuthenticationProvider> _logger;
 
-        public AuthenticationProvider(AuthenticationSetting authenticationSetting, IHttpService httpService, ILogger<AuthenticationProvider> logger)
+        public AuthenticationProvider(IOptions<AuthenticationSetting> authenticationSetting, IHttpService httpService, ILogger<AuthenticationProvider> logger)
         {
-            _authenticationSetting = authenticationSetting;
+            _authenticationSetting = authenticationSetting.Value;
             _httpService = httpService;
             _logger = logger;
         }
@@ -78,7 +79,15 @@ namespace Codecaine.Common.Authentication.Providers.KeyCloak
 
                 if (users.Count == 1)
                 {
-                    return Result.Success<string>(users[0]["id"].ToString());
+                    string userId = users[0]?["id"]?.ToString() ?? string.Empty;
+
+                    if(string.IsNullOrEmpty(userId))
+                    {
+                        return Result.Failure<string>(AuthenticationErrors.UserNameNotExist);
+                    }
+
+                    return Result.Success<string>(userId);
+
                 }
             }
 

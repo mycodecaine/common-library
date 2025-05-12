@@ -126,6 +126,7 @@ namespace Codecaine.Common.AspNetCore.Middleware
                 ApplicationLayerException serviceApplicationException => (HttpStatusCode.InternalServerError, new[] { serviceApplicationException.Error }),
                 InfrastructureException serviceInfrastructureException => (HttpStatusCode.InternalServerError, new[] { serviceInfrastructureException.Error }),
                 NotFoundException notFoundException => (HttpStatusCode.NotFound, new[] { notFoundException.Error }),
+                CommonLibraryException commonLibraryException => (HttpStatusCode.InternalServerError, new[] { commonLibraryException.Error }),
 
                 _ => (HttpStatusCode.InternalServerError, new[] { GeneralErrors.ServerError })
             };
