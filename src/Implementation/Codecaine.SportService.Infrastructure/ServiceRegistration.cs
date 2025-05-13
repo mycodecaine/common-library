@@ -63,6 +63,7 @@ namespace Codecaine.SportService.Infrastructure
 
             services.AddOpenApi(options =>
             {
+               
                 options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
             });
 

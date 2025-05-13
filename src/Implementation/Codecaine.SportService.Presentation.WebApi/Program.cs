@@ -30,6 +30,8 @@ namespace Codecaine.SportService.Presentation.WebApi
             // Version
             builder.Services.AddApiVersioning();
 
+            builder .Services.AddHttpContextAccessor();
+
 
             // Temporary Solution before implementing Authentication with keycloak
             builder.Services.AddScoped<IRequestContext, RequestContext>();
@@ -51,7 +53,7 @@ namespace Codecaine.SportService.Presentation.WebApi
 
 
 
-            app.UseCodecaineCommonExceptionHandler();
+           
             app.UseHttpsRedirection();
 
             app.UseAuthentication();

@@ -1,4 +1,5 @@
 ﻿using Codecaine.Common.Abstractions;
+using Codecaine.Common.AspNetCore.Middleware;
 using Codecaine.Common.Authentication;
 using Codecaine.Common.Authentication.Providers.Services;
 using Codecaine.Common.Date;
@@ -34,6 +35,7 @@ namespace Codecaine.Common
         public static IApplicationBuilder UseCommonLibraryBuilder(this IApplicationBuilder app)
         {
             app.UseCompression();
+            app.UseCodecaineCommonExceptionHandler();
 
             return app;
         }
