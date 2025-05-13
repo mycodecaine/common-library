@@ -1,12 +1,11 @@
 
+using Codecaine.Common;
 using Codecaine.Common.Abstractions;
+using Codecaine.Common.AspNetCore.Middleware;
 using Codecaine.SportService.Application;
 using Codecaine.SportService.Infrastructure;
 using Codecaine.SportService.Presentation.WebApi.Context;
 using Scalar.AspNetCore;
-using Codecaine.Common.AspNetCore.Middleware;
-using Codecaine.Common;
-using Microsoft.Extensions.Options;
 
 namespace Codecaine.SportService.Presentation.WebApi
 {
@@ -20,7 +19,9 @@ namespace Codecaine.SportService.Presentation.WebApi
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+
+            
+
 
             // Add Application
             builder.Services.AddApplication();
@@ -44,6 +45,7 @@ namespace Codecaine.SportService.Presentation.WebApi
                 {
                     options.Title = "Codecaine Sport Service API";
                     options.Theme = ScalarTheme.Default;
+                    
                 });
             }
 
@@ -52,6 +54,7 @@ namespace Codecaine.SportService.Presentation.WebApi
             app.UseCodecaineCommonExceptionHandler();
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseCommonLibraryBuilder();
 
@@ -60,4 +63,8 @@ namespace Codecaine.SportService.Presentation.WebApi
             app.Run();
         }
     }
+
+   
+
+
 }

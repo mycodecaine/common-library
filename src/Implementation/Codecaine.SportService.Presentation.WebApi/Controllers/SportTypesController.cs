@@ -10,6 +10,7 @@ using Codecaine.SportService.Application.UseCases.SportTypes.Queries.SearchSport
 using Codecaine.SportService.Application.ViewModels;
 using Codecaine.SportService.Presentation.WebApi.DTOs.SportTypes;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Codecaine.SportService.Presentation.WebApi.Controllers
@@ -21,6 +22,7 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [Authorize]
     public class SportTypesController : BaseController
     {
         /// <summary>  
@@ -37,6 +39,7 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
         /// <param name="request">The sport type data transfer object containing the details of the sport type to create.</param>  
         /// <returns>An <see cref="IActionResult"/> indicating the result of the operation.</returns>  
         [HttpPost()]
+       
         [ProducesResponseType(typeof(CreateSportTypeCommandResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] SportTypeDto request) =>

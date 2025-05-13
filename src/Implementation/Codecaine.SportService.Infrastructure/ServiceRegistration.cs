@@ -1,13 +1,11 @@
 ﻿using Codecaine.Common;
-using Codecaine.Common.Abstractions;
-using Codecaine.Common.Authentication.Providers.KeyCloak.Setting;
-using Codecaine.Common.Authentication.Providers.KeyCloak;
+using Codecaine.Common.AspNetCore.OpenApi;
 using Codecaine.Common.Authentication;
+using Codecaine.Common.Authentication.Providers.KeyCloak;
+using Codecaine.Common.Authentication.Providers.KeyCloak.Setting;
 using Codecaine.Common.Caching;
 using Codecaine.Common.Caching.Redis;
 using Codecaine.Common.Caching.Settings;
-using Codecaine.Common.Date;
-using Codecaine.Common.EventConsumer;
 using Codecaine.Common.Messaging;
 using Codecaine.Common.Messaging.MassTransit;
 using Codecaine.Common.Persistence;
@@ -17,9 +15,11 @@ using Codecaine.SportService.Infrastructure.DataAccess;
 using Codecaine.SportService.Infrastructure.DataAccess.Repositories;
 using Codecaine.SportService.Infrastructure.Messaging;
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+
+
 
 namespace Codecaine.SportService.Infrastructure
 {
@@ -51,17 +51,24 @@ namespace Codecaine.SportService.Infrastructure
             services.AddOptions<AuthenticationSetting>().BindConfiguration(AuthenticationSetting.DefaultSectionName);
             services.AddScoped<IAuthenticationProvider, AuthenticationProvider>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
-           
+            
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-               .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, o =>
-               {
-                   o.MetadataAddress = $"{baseUrl}/realms/{realmName}/.well-known/openid-configuration";
-                   o.Authority = $"{baseUrl}/realms/{realmName}";
-                   o.Audience = "account";
-                   o.RequireHttpsMetadata = false; // ---> Will be issue if not configure https TODO : configure https 
-               });
+            .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, o =>
+            {
+                o.MetadataAddress = $"{baseUrl}/realms/{realmName}/.well-known/openid-configuration";
+                o.Authority = $"{baseUrl}/realms/{realmName}";
+                o.Audience = "account";
+                o.RequireHttpsMetadata = false; // ---> Will be issue if not configure https TODO : configure https 
+            });
+
+            services.AddOpenApi(options =>
+            {
+                options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+            });
 
 
+
+            services.AddAuthorization();
 
             // Common Library
             services.AddCommonLibrary();
@@ -109,5 +116,7 @@ namespace Codecaine.SportService.Infrastructure
 
             return services;
         }
+
+       
     }
 }

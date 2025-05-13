@@ -1,11 +1,13 @@
-﻿using Codecaine.Common.Authentication;
+﻿using Asp.Versioning;
+using Codecaine.Common.Authentication;
 using Codecaine.SportService.Presentation.WebApi.DTOs.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Codecaine.SportService.Presentation.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
@@ -24,7 +26,7 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
             {
                 return Ok(result);
             }
-            return BadRequest(result);
+            return BadRequest(result.Error);
         }
 
         [HttpPost("register")]
