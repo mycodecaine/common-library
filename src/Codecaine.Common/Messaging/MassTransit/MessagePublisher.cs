@@ -59,8 +59,6 @@ namespace Codecaine.Common.Messaging.MassTransit
 
             var wrapper = new MessageWrapper(payload);
 
-            //await _publishEndPoint.Publish(wrapper);
-
             await _publishEndPoint.Publish(wrapper, context =>
             {
                 var activity = Activity.Current;
@@ -105,7 +103,19 @@ namespace Codecaine.Common.Messaging.MassTransit
 
             var wrapper = new MessageWrapper(payload);
 
-            return _publishEndPoint.Publish(wrapper);
+            return _publishEndPoint.Publish(wrapper, context =>
+            {
+                var activity = Activity.Current;
+                if (activity != null)
+                {
+                    context.Headers.Set("traceparent", activity.Id);
+                    // Also include baggage or correlationId if needed
+                    context.Headers.Set("correlation_id", _correlationIdGenerator.Get());
+                    context.CorrelationId = _correlationIdGenerator.Get();
+
+                }
+            }); 
+
         }
     }
 }

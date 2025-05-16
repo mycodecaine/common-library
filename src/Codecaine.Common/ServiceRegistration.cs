@@ -31,7 +31,7 @@ namespace Codecaine.Common
             services.AddScoped<IJwtService, JwtService>();
 
             // CorrelationId
-            services.AddTransient<ICorrelationIdGenerator, CorrelationIdGenerator>();
+            services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
 
             return services;
         }

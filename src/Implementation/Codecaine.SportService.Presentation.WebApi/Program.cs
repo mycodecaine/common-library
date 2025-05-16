@@ -2,6 +2,7 @@
 using Codecaine.Common;
 using Codecaine.Common.Abstractions;
 using Codecaine.Common.AspNetCore.Middleware;
+using Codecaine.Common.Correlation;
 using Codecaine.Common.Telemetry;
 using Codecaine.SportService.Application;
 using Codecaine.SportService.Infrastructure;
@@ -20,6 +21,8 @@ namespace Codecaine.SportService.Presentation.WebApi
             // Add Telemetry Service from common library
             builder.AddTelemetryRegistration();
 
+
+
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -34,6 +37,8 @@ namespace Codecaine.SportService.Presentation.WebApi
             builder.Services.AddInfrastructure();
             // Version
             builder.Services.AddApiVersioning();
+
+           
 
             builder .Services.AddHttpContextAccessor();
 

@@ -1,4 +1,5 @@
 ﻿using Codecaine.Common;
+using Codecaine.Common.Abstractions;
 using Codecaine.Common.AspNetCore.OpenApi;
 using Codecaine.Common.Authentication;
 using Codecaine.Common.Authentication.Providers.KeyCloak;
@@ -6,6 +7,7 @@ using Codecaine.Common.Authentication.Providers.KeyCloak.Setting;
 using Codecaine.Common.Caching;
 using Codecaine.Common.Caching.Redis;
 using Codecaine.Common.Caching.Settings;
+using Codecaine.Common.Correlation;
 using Codecaine.Common.Messaging;
 using Codecaine.Common.Messaging.MassTransit;
 using Codecaine.Common.Persistence;
@@ -67,7 +69,7 @@ namespace Codecaine.SportService.Infrastructure
                 options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
             });
 
-
+           
 
             services.AddAuthorization();
 
