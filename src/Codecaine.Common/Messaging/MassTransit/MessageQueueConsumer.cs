@@ -20,7 +20,9 @@ namespace Codecaine.Common.Messaging.MassTransit
 
         public Task Consume(ConsumeContext<MessageWrapper> context)
         {
-            _logger.LogInformation("MessageQueueConsumer : {Message}", context.Message.Message);
+            _logger.LogInformation("MessageQueueConsumer-Message: {Message}", context.Message.Message);
+            _logger.LogInformation("MessageQueueConsumer-CorrelationId: {CorrelationId}", context.CorrelationId);
+
 
             var integrationEvent = JsonConvert.DeserializeObject<IIntegrationEvent>(context.Message.Message, new JsonSerializerSettings
             {

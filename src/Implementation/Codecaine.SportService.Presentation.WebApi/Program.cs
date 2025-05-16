@@ -1,11 +1,13 @@
 
+using Codecaine.Common;
 using Codecaine.Common.Abstractions;
+using Codecaine.Common.AspNetCore.Middleware;
+using Codecaine.Common.Correlation;
+using Codecaine.Common.Telemetry;
 using Codecaine.SportService.Application;
 using Codecaine.SportService.Infrastructure;
 using Codecaine.SportService.Presentation.WebApi.Context;
 using Scalar.AspNetCore;
-using Codecaine.Common.AspNetCore.Middleware;
-using Microsoft.Extensions.Options;
 
 namespace Codecaine.SportService.Presentation.WebApi
 {
@@ -15,11 +17,19 @@ namespace Codecaine.SportService.Presentation.WebApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
+
+            // Add Telemetry Service from common library
+            builder.AddTelemetryRegistration();
+
+
+
             // Add services to the container.
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-            builder.Services.AddOpenApi();
+
+            
+
 
             // Add Application
             builder.Services.AddApplication();
@@ -28,9 +38,13 @@ namespace Codecaine.SportService.Presentation.WebApi
             // Version
             builder.Services.AddApiVersioning();
 
+           
+
+            builder .Services.AddHttpContextAccessor();
+
 
             // Temporary Solution before implementing Authentication with keycloak
-            builder.Services.AddScoped<IRequestContext,RequestContext>();
+            builder.Services.AddScoped<IRequestContext, RequestContext>();
 
             var app = builder.Build();
 
@@ -39,23 +53,33 @@ namespace Codecaine.SportService.Presentation.WebApi
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
-                app.MapScalarApiReference(options => {
+                app.MapScalarApiReference(options =>
+                {
                     options.Title = "Codecaine Sport Service API";
                     options.Theme = ScalarTheme.Default;
+                    
                 });
             }
 
-           
 
-            app.UseCodecaineCommonExceptionHandler();
+
+           
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            // Add Telemetry Service from common library
+            app.UseTelemetryRegistration();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseCommonLibraryBuilder();
 
             app.MapControllers();
 
             app.Run();
         }
     }
+
+   
+
+
 }

@@ -20,7 +20,15 @@
         "RabbitMq__Host": "localhost",
         "RabbitMq__UserName": "guest",
         "RabbitMq__Password": "guest",
-        "RabbitMq__DefaultQueueName": "codecaine-message"
+        "RabbitMq__DefaultQueueName": "codecaine-message",
+        "Caching__ConnectionString": "localhost:6379",
+        "Authentication__ClientId": "sportivo",
+        "Authentication__ClientSecret": "SK0scj8SopsVmFuO8fpdZpsRaMdvt6tC",
+        "Authentication__TokenEndPoint": "http://localhost:7080/realms/master/protocol/openid-connect/token",
+        "Authentication__BaseUrl": "http://localhost:7080",
+        "Authentication__RealmName": "master",
+        "Authentication__Admin": "admin",
+        "Authentication__Password": "admin"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7283;http://localhost:5077"

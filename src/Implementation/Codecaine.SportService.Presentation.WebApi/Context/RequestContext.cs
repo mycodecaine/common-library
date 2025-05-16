@@ -1,11 +1,32 @@
 ﻿using Codecaine.Common.Abstractions;
+using System.Security.Claims;
 
 namespace Codecaine.SportService.Presentation.WebApi.Context
 {
     public class RequestContext : IRequestContext
     {
-        public Guid UserId => Guid.Parse("6B29FC40-CA47-1067-B31D-00DD010662DA");
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public string UserName => "System";
+        public RequestContext(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public Guid UserId
+        {
+            get
+            {
+                var userIdClaim = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier);
+                return Guid.TryParse(userIdClaim?.Value, out var guid) ? guid : Guid.Empty;
+            }
+        }
+
+        public string UserName
+        {
+            get
+            {
+                return _httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "Unknown";
+            }
+        }
     }
 }

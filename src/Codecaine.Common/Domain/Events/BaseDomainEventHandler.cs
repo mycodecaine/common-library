@@ -14,7 +14,7 @@ namespace Codecaine.Common.Domain.Events
         /// <param name="correlationIdGenerator">The correlation ID generator.</param>
         protected BaseDomainEventHandler(ICorrelationIdGenerator correlationIdGenerator)
         {
-            CorrelationId = correlationIdGenerator.Get();
+            CorrelationId = correlationIdGenerator.Get().ToString();
         }
 
         /// <summary>
