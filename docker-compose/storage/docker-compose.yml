@@ -1,0 +1,39 @@
+services:
+  minio:
+    image: quay.io/minio/minio:latest
+    container_name: minio
+    restart: always
+    ports:
+      - "19000:9000"
+      - "19090:9090"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: admin123
+    command: server /data --console-address ":9090"
+    volumes:
+      - minio_data:/data
+  
+  
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    container_name: azurite
+    ports:
+      - "11000:10000" # Blob service
+      - "11001:10001" # Queue service
+      - "11002:10002" # Table service
+    volumes:
+      - azurite_data:/data
+    command: "azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0"  
+  gcs-emulator:
+    image: google/cloud-sdk:latest
+    container_name: gcs-emulator
+    command: gcloud beta emulators storage start --host-port=0.0.0.0:19090
+    ports:
+      - "9090:9090"
+    environment:
+      - STORAGE_EMULATOR_HOST=http://0.0.0.0:19090
+      - GOOGLE_ACCESS_KEY_ID=GOOG1EQXAMPLEXYZXYZ
+      - GOOGLE_SECRET_ACCESS_KEY=AbCdEfGhIjKlMnOpQrStUvWxYz123456
+volumes:
+  minio_data:
+  azurite_data:

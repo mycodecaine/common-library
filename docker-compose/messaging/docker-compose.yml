@@ -1,0 +1,40 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"  # AMQP protocol port
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+ 
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    environment:
+      - SERVICES=sqs,sns
+      - DEFAULT_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - DEBUG=1
+    ports:
+      - "4566:4566" # LocalStack API Gateway
+      - "8080:8080" # Web UI (Pro feature)   
+
+  localstack-ui:
+    image: localstack/localstack-ui
+    container_name: localstack-ui
+    ports:
+      - "8081:8080"
+    environment:
+      - LOCALSTACK_HOST=localstack
+      - LOCALSTACK_PORT=4566
+    depends_on:
+      - localstack
+
+volumes:
+  rabbitmq_data:
