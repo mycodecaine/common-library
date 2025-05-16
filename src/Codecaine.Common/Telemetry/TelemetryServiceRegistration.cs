@@ -17,25 +17,25 @@ namespace Codecaine.Common.Telemetry
         {
             builder.Host.UseSerilog(Logger.ConfigureLogger);
 
+            var tracingSource = Environment.GetEnvironmentVariable("Telemetry__TracingSource");
+            var tracingOtlpEndPoint = Environment.GetEnvironmentVariable("Telemetry__OtlpEndPoint");
+            var metricsMeter = Environment.GetEnvironmentVariable("Telemetry__Metrics");
+
+
+
             builder.Services.AddOpenTelemetry()
             .WithTracing(tracing =>
             {
                 tracing
                     .AddAspNetCoreInstrumentation() // Captures HTTP requests
                     .AddHttpClientInstrumentation() // Captures outgoing HTTP requests
-                    .AddSource("Codecaine.SportApi")
-                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("Codecaine.SportApi"))
+                    .AddSource(tracingSource)
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(tracingSource))
                     .AddOtlpExporter(otlpOptions =>
                     {
-                        otlpOptions.Endpoint = new Uri("http://localhost:4317"); // OpenTelemetry Collector OTLP gRPC port
+                        otlpOptions.Endpoint = new Uri(tracingOtlpEndPoint); // OpenTelemetry Collector OTLP gRPC port
                         otlpOptions.Protocol = OtlpExportProtocol.Grpc;
-                    })
-
-                    //.AddJaegerExporter(options =>
-                    //{
-                    //    options.AgentHost = "localhost"; // Jaeger host
-                    //    options.AgentPort = 6831; // Jaeger port
-                    //})
+                    })                    
                     .AddConsoleExporter(); // Debugging traces in console
             })
             .WithMetrics(metrics =>
@@ -43,7 +43,7 @@ namespace Codecaine.Common.Telemetry
                 metrics
                     .AddAspNetCoreInstrumentation() // Collects HTTP metrics
                     .AddRuntimeInstrumentation() // Collects GC, CPU, etc.
-                    .AddMeter("Codecaine.SportApi.Metrics")
+                    .AddMeter(metricsMeter)
                     .AddPrometheusExporter(); // Exposes metrics for Prometheus
             });
 

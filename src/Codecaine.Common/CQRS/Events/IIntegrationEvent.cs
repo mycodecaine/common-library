@@ -15,8 +15,4 @@ namespace Codecaine.Common.CQRS.Events
     {
     }
 
-    public abstract class BaseIntegrationEvent : IIntegrationEvent
-    {
-        public abstract Guid CorrelationId { get; }
-    }
 }

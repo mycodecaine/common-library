@@ -12,8 +12,10 @@ namespace Codecaine.Common.Telemetry.Logging
         (context, loggerConfiguration) =>
         {
             var env = context.HostingEnvironment;
-            // make use this later Environment.GetEnvironmentVariable("GRAFANA_LOKI_URL");
-            var grafanalokiUrl = "http://localhost:3100";
+            
+            var grafanalokiUrl = Environment.GetEnvironmentVariable("Telemetry__GrafanaUrl"); 
+            var jobName = Environment.GetEnvironmentVariable("Telemetry__JobName") ?? "Codecaine.Api";
+            var presentation = Environment.GetEnvironmentVariable("Telemetry__Presentation");
             loggerConfiguration.MinimumLevel.Information()
                 .Enrich.FromLogContext()
                 .Enrich.WithProperty("ApplicationName", env.ApplicationName)
@@ -24,13 +26,13 @@ namespace Codecaine.Common.Telemetry.Logging
                 .WriteTo.Console()
                 .WriteTo.GrafanaLoki(grafanalokiUrl,
                     [
-                        new() { Key = "job", Value = "Codecaine.API" } // Set a custom job name
+                        new() { Key = "job", Value = jobName } // Set a custom job name
                         ]
                 );// Send logs to Loki
 
             if (context.HostingEnvironment.IsDevelopment())
             {
-                loggerConfiguration.MinimumLevel.Override("Codecaine.API.Presentation", LogEventLevel.Information);
+                loggerConfiguration.MinimumLevel.Override(presentation, LogEventLevel.Information);
             }
 
 
