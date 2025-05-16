@@ -2,6 +2,7 @@
 using Codecaine.Common.AspNetCore.Middleware;
 using Codecaine.Common.Authentication;
 using Codecaine.Common.Authentication.Providers.Services;
+using Codecaine.Common.Correlation;
 using Codecaine.Common.Date;
 using Codecaine.Common.EventConsumer;
 using Codecaine.Common.Extensions;
@@ -29,6 +30,9 @@ namespace Codecaine.Common
             // Authentication - Jwt Service
             services.AddScoped<IJwtService, JwtService>();
 
+            // CorrelationId
+            services.AddTransient<ICorrelationIdGenerator, CorrelationIdGenerator>();
+
             return services;
         }
 
@@ -36,6 +40,7 @@ namespace Codecaine.Common
         {
             app.UseCompression();
             app.UseCodecaineCommonExceptionHandler();
+            app.UseCodecaineCorrelationIdMiddlewareHandler();
 
             return app;
         }

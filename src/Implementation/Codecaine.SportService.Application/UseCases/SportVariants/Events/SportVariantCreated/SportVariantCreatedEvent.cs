@@ -1,6 +1,7 @@
 ﻿using Codecaine.Common.CQRS.Events;
 using Codecaine.SportService.Domain.Events;
 using Newtonsoft.Json;
+using OpenTelemetry;
 
 namespace Codecaine.SportService.Application.UseCases.SportVariants.Events.SportVariantCreated
 {
@@ -18,6 +19,6 @@ namespace Codecaine.SportService.Application.UseCases.SportVariants.Events.Sport
         /// Gets the user identifier.
         /// </summary>
         public Guid SportVariantId { get; }
-        public Guid CorrelationId => Guid.NewGuid();
+        public Guid CorrelationId => Guid.Parse(Baggage.GetBaggage("correlation_id"));
     }
 }

@@ -2,6 +2,7 @@
 using Codecaine.Common;
 using Codecaine.Common.Abstractions;
 using Codecaine.Common.AspNetCore.Middleware;
+using Codecaine.Common.Telemetry;
 using Codecaine.SportService.Application;
 using Codecaine.SportService.Infrastructure;
 using Codecaine.SportService.Presentation.WebApi.Context;
@@ -14,6 +15,10 @@ namespace Codecaine.SportService.Presentation.WebApi
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+
+            // Add Telemetry Service from common library
+            builder.AddTelemetryRegistration();
 
             // Add services to the container.
 
@@ -55,6 +60,9 @@ namespace Codecaine.SportService.Presentation.WebApi
 
            
             app.UseHttpsRedirection();
+
+            // Add Telemetry Service from common library
+            app.UseTelemetryRegistration();
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -1,7 +1,10 @@
-﻿using Codecaine.Common.CQRS.Events;
+﻿using Codecaine.Common.Abstractions;
+using Codecaine.Common.CQRS.Events;
 using MassTransit;
+using MassTransit.Transports;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace Codecaine.Common.Messaging.MassTransit
 {
@@ -12,16 +15,18 @@ namespace Codecaine.Common.Messaging.MassTransit
     {
         private readonly IPublishEndpoint _publishEndPoint;
         private readonly ILogger<MessagePublisher> _logger;
+        private readonly ICorrelationIdGenerator _correlationIdGenerator;
 
         /// <summary>  
         /// Initializes a new instance of the <see cref="MessagePublisher"/> class.  
         /// </summary>  
         /// <param name="publishEndPoint">The MassTransit publish endpoint.</param>  
         /// <param name="logger">The logger instance for logging operations.</param>  
-        public MessagePublisher(IPublishEndpoint publishEndPoint, ILogger<MessagePublisher> logger)
+        public MessagePublisher(IPublishEndpoint publishEndPoint, ILogger<MessagePublisher> logger, ICorrelationIdGenerator correlationIdGenerator)
         {
             _publishEndPoint = publishEndPoint;
             _logger = logger;
+            _correlationIdGenerator = correlationIdGenerator;
         }
 
         /// <summary>  
@@ -54,7 +59,20 @@ namespace Codecaine.Common.Messaging.MassTransit
 
             var wrapper = new MessageWrapper(payload);
 
-            await _publishEndPoint.Publish(wrapper);
+            //await _publishEndPoint.Publish(wrapper);
+
+            await _publishEndPoint.Publish(wrapper, context =>
+            {
+                var activity = Activity.Current;
+                if (activity != null)
+                {
+                    context.Headers.Set("traceparent", activity.Id);
+                    // Also include baggage or correlationId if needed
+                    context.Headers.Set("correlation_id", _correlationIdGenerator.Get());
+                    context.CorrelationId = _correlationIdGenerator.Get();
+
+                }
+            });
         }
 
         /// <summary>  

@@ -12,15 +12,23 @@ namespace Codecaine.SportService.Application.UseCases.SportTypes.Events.SportTyp
     internal class SportTypeCreatedEvent : IIntegrationEvent
     {
 
-        internal SportTypeCreatedEvent(SportTypeCreatedDomainEvent orderCreatedDomainEvent) => SportTypeId = orderCreatedDomainEvent.SportType.Id;
+        internal SportTypeCreatedEvent(SportTypeCreatedDomainEvent orderCreatedDomainEvent, Guid correlationId)
+        {
+            SportTypeId = orderCreatedDomainEvent.SportType.Id;
+            CorrelationId = correlationId;
+        }
 
         [JsonConstructor]
-        private SportTypeCreatedEvent(Guid sportTypeId) => SportTypeId = sportTypeId;
+        private SportTypeCreatedEvent(Guid sportTypeId, Guid correlationId)
+        {
+            SportTypeId = sportTypeId;
+            CorrelationId = correlationId;
+        }
 
         /// <summary>
         /// Gets the user identifier.
         /// </summary>
         public Guid SportTypeId { get; }
-        public Guid CorrelationId => Guid.NewGuid();
+        public Guid CorrelationId { get; private set; }
     }
 }
