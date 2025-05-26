@@ -15,6 +15,7 @@ using Codecaine.Common.Storage.Providers.AzureBlob;
 
 namespace Codecaine.Common.Tests.UnitTests.Storage
 {
+    [TestFixture]
     public class StorageProviderFactoryTests
     {
         private Mock<ILoggerFactory> _loggerFactoryMock;      
