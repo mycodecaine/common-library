@@ -29,7 +29,7 @@ namespace Codecaine.Common.Storage.Providers.AmazonS3
             _amazonS3UtilityWrapper = amazonS3UtilityWrapper;
         }
 
-        public Task<bool> Delete(string blobName)
+        public async Task<bool> Delete(string blobName)
         {
             var deleteObjectRequest = new DeleteObjectRequest
             {
@@ -37,9 +37,14 @@ namespace Codecaine.Common.Storage.Providers.AmazonS3
                 Key = blobName
             };
 
-            var deleteObjectResponse = _s3Client.DeleteObjectAsync(deleteObjectRequest);
+            var deleteObjectResponse =  await _s3Client.DeleteObjectAsync(deleteObjectRequest);
+            if (deleteObjectResponse.HttpStatusCode != HttpStatusCode.NoContent)
+            {
+              
+                return false;
+            }
 
-            return Task.FromResult(deleteObjectResponse.IsCompletedSuccessfully);
+            return true;
         }
 
         public async Task<Stream> Download(string blobName)
