@@ -111,6 +111,12 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
              .Bind(query => Mediator.Send(query))
              .Match(Ok, NotFound);
 
+        /// <summary>
+        /// Uploads a file associated with a sport type.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
 
         [HttpPost("upload/{id}")]
         [ProducesResponseType(typeof(UploadFileSportTypeCommandResponse), StatusCodes.Status200OK)]
