@@ -2,9 +2,11 @@
 using Codecaine.Common.Errors;
 using Codecaine.Common.Primitives.Maybe;
 using Codecaine.Common.Primitives.Result;
+using Codecaine.Common.Storage;
 using Codecaine.SportService.Application.UseCases.SportTypes.Commands.CreateSportType;
 using Codecaine.SportService.Application.UseCases.SportTypes.Commands.DeleteSportType;
 using Codecaine.SportService.Application.UseCases.SportTypes.Commands.UpdateSportType;
+using Codecaine.SportService.Application.UseCases.SportTypes.Commands.UploadFileSportType;
 using Codecaine.SportService.Application.UseCases.SportTypes.Queries.GetSportTypeById;
 using Codecaine.SportService.Application.UseCases.SportTypes.Queries.SearchSportTypeByName;
 using Codecaine.SportService.Application.ViewModels;
@@ -22,7 +24,7 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
     [ApiVersion("1")]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
-   // [Authorize]
+    // [Authorize]
     public class SportTypesController : BaseController
     {
         /// <summary>  
@@ -39,7 +41,7 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
         /// <param name="request">The sport type data transfer object containing the details of the sport type to create.</param>  
         /// <returns>An <see cref="IActionResult"/> indicating the result of the operation.</returns>  
         [HttpPost()]
-       
+
         [ProducesResponseType(typeof(CreateSportTypeCommandResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] SportTypeDto request) =>
@@ -102,11 +104,28 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
         /// <param name="name"></param>
         /// <returns></returns>
         [HttpGet("page/{page}/pageSize/{pageSize}/name/{name?}")]
-        [ProducesResponseType(typeof(SportTypeViewModel), StatusCodes.Status200OK)]        
-        public async Task<IActionResult> SearchByName(int page,int pageSize, string name=" ") =>
+        [ProducesResponseType(typeof(SportTypeViewModel), StatusCodes.Status200OK)]
+        public async Task<IActionResult> SearchByName(int page, int pageSize, string name = " ") =>
          await Maybe<SearchSportTypeByNameQuery>
-             .From(new SearchSportTypeByNameQuery(page,pageSize,name))
+             .From(new SearchSportTypeByNameQuery(page, pageSize, name))
              .Bind(query => Mediator.Send(query))
              .Match(Ok, NotFound);
+
+
+        [HttpPost("upload/{id}")]
+        public async Task<IActionResult> UploadFile(Guid id, IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new ErrorResponse(new[] { GeneralErrors.UnProcessableRequest }));
+            }
+            using var stream = file.OpenReadStream(); // Convert IFormFile to Stream
+
+
+            return await Result.Create(file, GeneralErrors.UnProcessableRequest)
+                .Map(request => new UploadFileSportTypeCommand(id, file.FileName, file.ContentType, stream))
+                .Bind(command => Mediator.Send(command))
+                .Match(Created, BadRequest);
+        }
     }
 }

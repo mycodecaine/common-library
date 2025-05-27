@@ -1,4 +1,5 @@
-﻿using Codecaine.Common;
+﻿using Amazon.S3;
+using Codecaine.Common;
 using Codecaine.Common.Abstractions;
 using Codecaine.Common.AspNetCore.OpenApi;
 using Codecaine.Common.Authentication;
@@ -12,14 +13,20 @@ using Codecaine.Common.Messaging;
 using Codecaine.Common.Messaging.MassTransit;
 using Codecaine.Common.Persistence;
 using Codecaine.Common.Persistence.EfCore.Interfaces;
+using Codecaine.Common.Storage;
+using Codecaine.Common.Storage.Factory;
+using Codecaine.Common.Storage.Providers.AmazonS3.Wrapper;
+using Codecaine.Common.Storage.Providers.Minio;
 using Codecaine.SportService.Domain.Repositories;
 using Codecaine.SportService.Infrastructure.DataAccess;
 using Codecaine.SportService.Infrastructure.DataAccess.Repositories;
 using Codecaine.SportService.Infrastructure.Messaging;
 using MassTransit;
+using MassTransit.Caching.Internals;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 
 
@@ -30,14 +37,14 @@ namespace Codecaine.SportService.Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
             // Persistence
-            string connectionString = Environment.GetEnvironmentVariable("ConnectionString__DataBase") ?? "";            
+            string connectionString = Environment.GetEnvironmentVariable("ConnectionString__DataBase") ?? "";
             services.AddDbContext<DataContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped<IDbContext>(serviceProvider => serviceProvider.GetRequiredService<DataContext>());
             services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<DataContext>());
 
             // Repositories
             services.AddScoped<ISportTypeRepository, SportTypeRepository>();
-            services.AddScoped<ISportVariantRepository, SportVariantRepository>();           
+            services.AddScoped<ISportVariantRepository, SportVariantRepository>();
 
             // MassTransit Publisher
             services.AddScoped<IMessagePublisher, MessagePublisher>();
@@ -53,7 +60,7 @@ namespace Codecaine.SportService.Infrastructure
             services.AddOptions<AuthenticationSetting>().BindConfiguration(AuthenticationSetting.DefaultSectionName);
             services.AddScoped<IAuthenticationProvider, AuthenticationProvider>();
             services.AddScoped<IAuthenticationService, AuthenticationService>();
-            
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, o =>
             {
@@ -65,16 +72,41 @@ namespace Codecaine.SportService.Infrastructure
 
             services.AddOpenApi(options =>
             {
-               
+
                 options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
             });
 
-           
+
 
             services.AddAuthorization();
 
             // Common Library
             services.AddCommonLibrary();
+
+            // Storage Providers --> Minio
+
+            services.AddSingleton<IAmazonS3UtilityWrapper, AmazonS3UtilityWrapper>();
+            services.AddSingleton<IStorageProviderFactory, StorageProviderFactory>();
+
+            var accessKey = Environment.GetEnvironmentVariable("StorageProvider__AccessKey");
+            var secretKey = Environment.GetEnvironmentVariable("StorageProvider__SecretKey");
+            var bucketName = Environment.GetEnvironmentVariable("StorageProvider__BucketName");
+            var region = Environment.GetEnvironmentVariable("StorageProvider__Region");
+            var endPoint = Environment.GetEnvironmentVariable("StorageProvider__EndPoint");
+            var minioProvider = new MinioProvider(
+                    bucketName,
+                    accessKey,
+                    secretKey,
+                    region,
+                    endPoint
+                );
+
+            services.AddScoped<IStorageProvider>(sp =>
+            {
+                var storageProviderFactory = sp.GetRequiredService<IStorageProviderFactory>();
+                return storageProviderFactory.CreateProvider(minioProvider);
+            });
+
 
             return services;
         }
