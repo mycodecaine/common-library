@@ -34,7 +34,12 @@
         "Telemetry__Metrics": "Codecaine.SportApi.Metrics",
         "Telemetry__GrafanaUrl": "http://localhost:3100",
         "Telemetry__JobName": "Codecaine.API",
-        "Telemetry__Presentation": "Codecaine.SportService.Presentation.WebApi"
+        "Telemetry__Presentation": "Codecaine.SportService.Presentation.WebApi",
+        "StorageProvider__AccessKey": "YjHh44F6ioMGKIXAT8W5",
+        "StorageProvider__SecretKey": "l6xBGjEdwQ4tJNNyOtsd5Zw2nKmQRIpmz5rp1Pis",
+        "StorageProvider__BucketName": "ipe-logger-configs-dev",
+        "StorageProvider__Region": "default-region",
+        "StorageProvider__EndPoint": "http://localhost:19000"
 
       },
       "dotnetRunMessages": true,
