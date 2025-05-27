@@ -113,15 +113,14 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
 
 
         [HttpPost("upload/{id}")]
+        [ProducesResponseType(typeof(UploadFileSportTypeCommandResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> UploadFile(Guid id, IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
                 return BadRequest(new ErrorResponse(new[] { GeneralErrors.UnProcessableRequest }));
             }
-            using var stream = file.OpenReadStream(); // Convert IFormFile to Stream
-
-
+            using var stream = file.OpenReadStream(); 
             return await Result.Create(file, GeneralErrors.UnProcessableRequest)
                 .Map(request => new UploadFileSportTypeCommand(id, file.FileName, file.ContentType, stream))
                 .Bind(command => Mediator.Send(command))

@@ -9,6 +9,6 @@ namespace Codecaine.SportService.Application.UseCases.SportTypes.Commands.Upload
     public record UploadFileSportTypeCommandResponse
     (
         string FileName,
-        string FileUrl
+        string Url
     );
 }
