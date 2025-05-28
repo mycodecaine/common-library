@@ -2,6 +2,8 @@
 using Codecaine.Common.Pagination.Interfaces;
 using Codecaine.Common.Persistence.MongoDB.Interfaces;
 using Codecaine.Common.Primitives.Maybe;
+using Microsoft.EntityFrameworkCore;
+using MongoDB.Driver;
 
 namespace Codecaine.Common.Persistence.MongoDB
 {
@@ -48,5 +50,19 @@ namespace Codecaine.Common.Persistence.MongoDB
         {
             Context.Update(entity);
         }
+
+        protected async Task<bool> AnyAsync(Specification<TEntity> specification) =>
+            await Context.GetCollection<TEntity>(typeof(TEntity).Name).AsQueryable().AnyAsync(specification);
+
+        protected async Task<Maybe<TEntity?>> FirstOrDefaultAsync(Specification<TEntity> specification)
+        {
+            return await Context.GetCollection<TEntity>(typeof(TEntity).Name).AsQueryable().FirstOrDefaultAsync(specification);
+        }
+
+        protected async Task<Maybe<List<TEntity>>> Where(Specification<TEntity> specification)
+        {
+            return await Context.GetCollection<TEntity>(typeof(TEntity).Name).AsQueryable().Where(specification).ToListAsync();
+        }
+
     }
 }
