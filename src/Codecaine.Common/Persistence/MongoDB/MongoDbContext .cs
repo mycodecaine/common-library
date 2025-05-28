@@ -15,16 +15,20 @@ namespace Codecaine.Common.Persistence.MongoDB
         private readonly IMongoClient _client;
         private readonly IDateTime _dateTime;
         private readonly IMediator _mediator;
+        private readonly bool _isStandAlone;
         
-        public Guid SaveBy { get;  set; }
+        private Guid SaveBy { get;  set; }
+        private IClientSessionHandle ClientSessionHandle { get; set; }
 
-       
+
+
 
         public MongoDbContext(IOptions<MongoDbSetting> mongoSettings, IDateTime dateTime, IMediator mediator)
         {
             var settings = mongoSettings.Value;
             _client = new MongoClient(settings.ConnectionString);
             _database = _client.GetDatabase(settings.DatabaseName);
+            _isStandAlone = settings.IsStandalone;  
             _dateTime = dateTime;
             _mediator = mediator;
         }
@@ -43,8 +47,16 @@ namespace Codecaine.Common.Persistence.MongoDB
         public void Insert<TEntity>(TEntity entity) where TEntity : Entity
         {
 
-            SetAuditProperties( entity, SaveBy);            
-            GetCollection<TEntity>(typeof(TEntity).Name).InsertOne(entity);
+            SetAuditProperties(entity, SaveBy);
+
+            if (_isStandAlone)
+            {
+                GetCollection<TEntity>(typeof(TEntity).Name).InsertOne(entity);
+                return;
+            }
+
+            GetCollection<TEntity>(typeof(TEntity).Name).InsertOne(ClientSessionHandle, entity);
+
         }        
 
         public void InsertRange<TEntity>(IReadOnlyCollection<TEntity> entities) where TEntity : Entity
@@ -64,8 +76,16 @@ namespace Codecaine.Common.Persistence.MongoDB
                 Update(entity);
                 return;
             }
+
+            if (_isStandAlone)
+            {
+                GetCollection<TEntity>(typeof(TEntity).Name)
+                    .DeleteOne(x => x.Id == entity.Id);
+                return;
+            }
+
             GetCollection<TEntity>(typeof(TEntity).Name)
-                .DeleteOne( x => x.Id == entity.Id);
+                .DeleteOne(ClientSessionHandle, x => x.Id == entity.Id);
         }       
 
         public async Task<IClientSessionHandle> StartSessionAsync()
@@ -77,15 +97,25 @@ namespace Codecaine.Common.Persistence.MongoDB
         {
             SetAuditProperties( entity, SaveBy);
 
+            if (_isStandAlone)
+            {
+                GetCollection<TEntity>(typeof(TEntity).Name)
+                    .ReplaceOne(x => x.Id == entity.Id, entity);
+                return;
+            }
+
             GetCollection<TEntity>(typeof(TEntity).Name)
-                .ReplaceOne( x => x.Id == entity.Id, entity);
+                .ReplaceOne(ClientSessionHandle, x => x.Id == entity.Id, entity);
         }
 
-        public  Task StartTransactionAsync(Guid saveBy, CancellationToken cancellationToken = default)
+        public  async Task StartTransactionAsync(Guid saveBy, CancellationToken cancellationToken = default)
         {
             SaveBy = saveBy;
 
-            return Task.CompletedTask;
+            if (!_isStandAlone)
+            {
+                ClientSessionHandle = await _client.StartSessionAsync();
+            }         
           
         }
 
@@ -93,7 +123,16 @@ namespace Codecaine.Common.Persistence.MongoDB
         {
             try
             {
-               
+                if (!_isStandAlone)
+                {
+                    if (ClientSessionHandle is null)
+                    {
+                        throw new InvalidOperationException("Session handle is null. Start a session before committing.");
+                    }
+                    ClientSessionHandle.StartTransaction();
+                    await ClientSessionHandle.CommitTransactionAsync();
+                }
+
                 await PublishDomainEvent(entity);
             }
             catch (Exception ex)

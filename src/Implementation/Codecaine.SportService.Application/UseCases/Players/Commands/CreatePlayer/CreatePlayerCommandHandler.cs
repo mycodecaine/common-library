@@ -31,7 +31,7 @@ namespace Codecaine.SportService.Application.UseCases.Players.Commands.CreatePla
 
              var player = Player.Create(request.Name, request.Description, request.ImageUrl);
 
-             _logger.LogInformation("Creating sport type with name: {Name}", request.Name);
+             _logger.LogInformation("Creating Player with name: {Name}", request.Name);
              await _unitOfWork.StartTransactionAsync(_requestContext.UserId, cancellationToken);
              _playerRepository.Insert(player);
 

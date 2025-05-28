@@ -36,7 +36,6 @@ namespace Codecaine.Common.Persistence.MongoDB
 
         public void Insert(TEntity entity)
         {
-
             Context.Insert(entity);
         }
 

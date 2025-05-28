@@ -41,7 +41,8 @@
         "StorageProvider__Region": "default-region",
         "StorageProvider__EndPoint": "http://localhost:19000",
         "MongoDbSetting__ConnectionString": "mongodb://localhost:27017",
-        "MongoDbSetting__DatabaseName": "Sportivo"
+        "MongoDbSetting__DatabaseName": "Sportivo",
+        "MongoDbSetting__IsStandalone": "true"
 
       },
       "dotnetRunMessages": true,

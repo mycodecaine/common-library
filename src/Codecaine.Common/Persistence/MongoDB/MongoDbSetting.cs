@@ -10,5 +10,6 @@ namespace Codecaine.Common.Persistence.MongoDB
     {
         public string ConnectionString { get; set; } 
         public string DatabaseName { get; set; }
+        public bool IsStandalone { get; set; } 
     }
 }
