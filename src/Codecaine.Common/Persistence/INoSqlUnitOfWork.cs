@@ -1,4 +1,5 @@
 ﻿using Codecaine.Common.Domain;
+using Codecaine.Common.Persistence.MongoDB.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,6 @@ namespace Codecaine.Common.Persistence
     {
         Task StartTransactionAsync(Guid saveBy, CancellationToken cancellationToken = default);
         Task CommitAsync<TEntity>(TEntity entity) where TEntity : Entity;
-        Task AbortAsync();
+     
     }
 }

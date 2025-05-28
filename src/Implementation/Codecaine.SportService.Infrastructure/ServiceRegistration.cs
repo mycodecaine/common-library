@@ -37,7 +37,7 @@ namespace Codecaine.SportService.Infrastructure
 {
     public static class ServiceRegistration
     {
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
             // Persistence
             string connectionString = Environment.GetEnvironmentVariable("ConnectionString__DataBase") ?? "";
@@ -47,9 +47,10 @@ namespace Codecaine.SportService.Infrastructure
 
             // Persistence MongoDb
            
-            services.AddOptions<MongoDbSetting>().BindConfiguration("MongoDbSetting");
-            services.AddScoped<IMongoDbContext, MongoDbContext>();
-            services.AddScoped<INoSqlUnitOfWork, MongoDbContext>();
+            services.AddOptions<MongoDbSetting>().BindConfiguration("MongoDbSetting"); 
+            services.AddScoped<MongoDbContext>(); // Register the implementation once
+            services.AddScoped<IMongoDbContext>(sp => sp.GetRequiredService<MongoDbContext>());
+            services.AddScoped<INoSqlUnitOfWork>(sp => sp.GetRequiredService<MongoDbContext>());
 
             BsonClassMap.RegisterClassMap<Entity>(cm =>
             {

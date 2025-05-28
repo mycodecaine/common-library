@@ -29,4 +29,34 @@ namespace Codecaine.SportService.Presentation.WebApi.Context
             }
         }
     }
+
+    /// <summary>
+    ///  Mock implementation of IRequestContext for testing purposes.
+    /// </summary>
+    public class MockRequestContext : IRequestContext
+    {
+       
+
+        public MockRequestContext()
+        {
+           
+        }
+
+        public Guid UserId
+        {
+            get
+            {
+
+                return Guid.NewGuid();
+            }
+        }
+
+        public string UserName
+        {
+            get
+            {
+                return "TestUser@codecaine.my";
+            }
+        }
+    }
 }

@@ -9,14 +9,16 @@ using MongoDB.Driver;
 
 namespace Codecaine.Common.Persistence.MongoDB
 {
-    public class MongoDbContext : IMongoDbContext, INoSqlUnitOfWork
+    public class MongoDbContext : IMongoDbContext 
     {
         private readonly IMongoDatabase _database;
         private readonly IMongoClient _client;
         private readonly IDateTime _dateTime;
         private readonly IMediator _mediator;
-        private  IClientSessionHandle _session;
-        private Guid SaveBy { get;  set; }
+        
+        public Guid SaveBy { get;  set; }
+
+       
 
         public MongoDbContext(IOptions<MongoDbSetting> mongoSettings, IDateTime dateTime, IMediator mediator)
         {
@@ -41,7 +43,7 @@ namespace Codecaine.Common.Persistence.MongoDB
         public void Insert<TEntity>(TEntity entity) where TEntity : Entity
         {
 
-            SetAuditProperties( entity, SaveBy);
+            SetAuditProperties( entity, SaveBy);            
             GetCollection<TEntity>(typeof(TEntity).Name).InsertOne(entity);
         }        
 
@@ -63,7 +65,7 @@ namespace Codecaine.Common.Persistence.MongoDB
                 return;
             }
             GetCollection<TEntity>(typeof(TEntity).Name)
-                .DeleteOne(_session, x => x.Id == entity.Id);
+                .DeleteOne( x => x.Id == entity.Id);
         }       
 
         public async Task<IClientSessionHandle> StartSessionAsync()
@@ -76,34 +78,33 @@ namespace Codecaine.Common.Persistence.MongoDB
             SetAuditProperties( entity, SaveBy);
 
             GetCollection<TEntity>(typeof(TEntity).Name)
-                .ReplaceOne(_session,x => x.Id == entity.Id, entity);
+                .ReplaceOne( x => x.Id == entity.Id, entity);
         }
 
-        public async  Task StartTransactionAsync(Guid saveBy, CancellationToken cancellationToken = default)
+        public  Task StartTransactionAsync(Guid saveBy, CancellationToken cancellationToken = default)
         {
             SaveBy = saveBy;
-            _session = await _client.StartSessionAsync();
+
+            return Task.CompletedTask;
+          
         }
 
         public async Task CommitAsync<TEntity>(TEntity entity) where TEntity : Entity
         {
             try
             {
-               // await _session.CommitTransactionAsync();
+               
                 await PublishDomainEvent(entity);
             }
             catch (Exception ex)
             {
-               // await AbortAsync();
+                
                 throw new InvalidOperationException("Failed to commit transaction", ex);
             }
 
         }
 
-        public Task AbortAsync()
-        {
-            return _session.AbortTransactionAsync();
-        }
+       
 
 
 

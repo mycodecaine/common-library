@@ -1,6 +1,7 @@
 ﻿using Codecaine.Common.Abstractions;
 using Codecaine.Common.CQRS.Base;
 using Codecaine.Common.Persistence;
+using Codecaine.Common.Persistence.MongoDB.Interfaces;
 using Codecaine.Common.Primitives.Result;
 using Codecaine.SportService.Domain.Entities;
 using Codecaine.SportService.Domain.Repositories;

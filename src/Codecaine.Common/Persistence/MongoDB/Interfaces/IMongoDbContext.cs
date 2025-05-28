@@ -5,10 +5,10 @@ using static Amazon.S3.Util.S3EventNotification;
 
 namespace Codecaine.Common.Persistence.MongoDB.Interfaces
 {
-    public interface IMongoDbContext
+    public interface IMongoDbContext: INoSqlUnitOfWork
     {
         IMongoCollection<T> GetCollection<T>(string name);
-        Task<IClientSessionHandle> StartSessionAsync();
+        Task<IClientSessionHandle> StartSessionAsync();       
 
         /// <summary>
         /// Gets the entity with the specified identifier.

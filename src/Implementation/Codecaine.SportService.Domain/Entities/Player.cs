@@ -24,9 +24,7 @@ namespace Codecaine.SportService.Domain.Entities
         /// <summary>  
         /// Gets the URL of the image representing the sport type.  
         /// </summary>  
-        public string ImageUrl { get; private set; }
-
-        public override Guid Id => base.Id;
+        public string ImageUrl { get; private set; }     
 
         public Player() { }
 

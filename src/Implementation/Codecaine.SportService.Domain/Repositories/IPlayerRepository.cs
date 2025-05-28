@@ -3,7 +3,7 @@ using Codecaine.SportService.Domain.Entities;
 
 namespace Codecaine.SportService.Domain.Repositories
 {
-    public interface IPlayerRepository: INoSqlRepository<Player>
+    public interface IPlayerRepository: IRepository<Player>
     {
     }
 }
