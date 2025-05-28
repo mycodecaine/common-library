@@ -43,10 +43,11 @@ namespace Codecaine.SportService.Domain.Entities
 
         public static Player Create(string name, string description, string imageUrl)
         {
-            var sportType = new Player(name, description, imageUrl);
-           // Add Domain later sportType.AddDomainEvent(new SportTypeCreatedDomainEvent(sportType));
+            var player = new Player(name, description, imageUrl);
+          
+            player.AddDomainEvent(new PlayerCreatedDomainEvent(player));
 
-            return sportType;
+            return player;
         }
 
         // Audit Property  
