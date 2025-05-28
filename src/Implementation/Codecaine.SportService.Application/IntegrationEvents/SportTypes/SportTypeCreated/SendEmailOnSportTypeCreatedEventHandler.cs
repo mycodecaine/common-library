@@ -1,7 +1,6 @@
 ﻿using Codecaine.Common.CQRS.Events;
 using Codecaine.SportService.Application.UseCases.SportTypes.Events.SportTypeCreated;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace Codecaine.SportService.Application.IntegrationEvents.SportTypes.SportTypeCreated
 {

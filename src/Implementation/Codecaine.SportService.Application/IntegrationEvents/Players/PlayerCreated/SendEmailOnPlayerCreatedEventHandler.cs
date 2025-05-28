@@ -1,15 +1,10 @@
 ﻿using Codecaine.Common.CQRS.Events;
 using Codecaine.SportService.Application.UseCases.Players.Events.PlayerCreated;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Codecaine.SportService.Application.IntegrationEvents.Players.PlayerCreated
 {
-  
+
 
     internal class SendEmailOnPlayerCreatedEventHandler : IIntegrationEventHandler<PlayerCreatedEvent>
     {
