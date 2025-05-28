@@ -10,7 +10,7 @@ namespace Codecaine.Common.Persistence.MongoDB
         
         protected readonly IMongoDbContext _context;
 
-        public MongoRepository(IMongoDbContext context, string collectionName)
+        public MongoRepository(IMongoDbContext context)
         {
           
             _context = context;

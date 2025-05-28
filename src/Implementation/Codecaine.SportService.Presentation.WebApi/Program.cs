@@ -17,6 +17,8 @@ namespace Codecaine.SportService.Presentation.WebApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            var configuration = builder.Configuration;
+
 
             // Add Telemetry Service from common library
             builder.AddTelemetryRegistration();
@@ -34,7 +36,7 @@ namespace Codecaine.SportService.Presentation.WebApi
             // Add Application
             builder.Services.AddApplication();
             // Add Infrastructure
-            builder.Services.AddInfrastructure();
+            builder.Services.AddInfrastructure(configuration);
             // Version
             builder.Services.AddApiVersioning();
 

@@ -33,7 +33,7 @@ namespace Codecaine.Common.Domain
         /// <summary>
         /// Gets or sets the entity identifier.
         /// </summary>
-        public Guid Id { get; private set; }
+        public virtual Guid Id { get; private set; }
 
         public static bool operator ==(Entity a, Entity b)
         {

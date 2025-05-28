@@ -4,7 +4,6 @@ using Codecaine.Common.Domain.Interfaces;
 using Codecaine.Common.Persistence.MongoDB.Interfaces;
 using Codecaine.Common.Primitives.Maybe;
 using MediatR;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -42,8 +41,8 @@ namespace Codecaine.Common.Persistence.MongoDB
         public void Insert<TEntity>(TEntity entity) where TEntity : Entity
         {
 
-            SetAuditProperties(entity, SaveBy);
-            GetCollection<TEntity>(typeof(TEntity).Name).InsertOne(_session,entity);
+            SetAuditProperties( entity, SaveBy);
+            GetCollection<TEntity>(typeof(TEntity).Name).InsertOne(entity);
         }        
 
         public void InsertRange<TEntity>(IReadOnlyCollection<TEntity> entities) where TEntity : Entity
@@ -57,7 +56,7 @@ namespace Codecaine.Common.Persistence.MongoDB
         public void Remove<TEntity>(TEntity entity) where TEntity : Entity
         {
            
-            var isMarkedAsDeleted = IsMarkAsDeleted(entity);
+            var isMarkedAsDeleted = IsMarkAsDeleted( entity);
             if (isMarkedAsDeleted)
             {
                 Update(entity);
@@ -74,7 +73,7 @@ namespace Codecaine.Common.Persistence.MongoDB
 
         public void Update<TEntity>(TEntity entity) where TEntity : Entity
         {
-            SetAuditProperties(entity, SaveBy);
+            SetAuditProperties( entity, SaveBy);
 
             GetCollection<TEntity>(typeof(TEntity).Name)
                 .ReplaceOne(_session,x => x.Id == entity.Id, entity);
@@ -88,14 +87,25 @@ namespace Codecaine.Common.Persistence.MongoDB
 
         public async Task CommitAsync<TEntity>(TEntity entity) where TEntity : Entity
         {
-            await PublishDomainEvent(entity);
-            await _session.CommitTransactionAsync();
+            try
+            {
+               // await _session.CommitTransactionAsync();
+                await PublishDomainEvent(entity);
+            }
+            catch (Exception ex)
+            {
+               // await AbortAsync();
+                throw new InvalidOperationException("Failed to commit transaction", ex);
+            }
+
         }
 
         public Task AbortAsync()
         {
             return _session.AbortTransactionAsync();
         }
+
+
 
         private void SetAuditProperties<TEntity>(TEntity entity, Guid currentUserId) where TEntity : Entity
         {
@@ -114,9 +124,11 @@ namespace Codecaine.Common.Persistence.MongoDB
                 SetProperty(entity, nameof(auditable.ModifiedOnUtc), now);
                 SetProperty(entity, nameof(auditable.ModifiedBy), currentUserId);
             }
+
         }
 
-        private bool IsMarkAsDeleted<TEntity>(TEntity entity) where TEntity : Entity
+
+        private bool IsMarkAsDeleted<TEntity>( TEntity entity) where TEntity : Entity
         {
             if (entity is ISoftDeletableEntity softDeletable)
             {
@@ -143,10 +155,7 @@ namespace Codecaine.Common.Persistence.MongoDB
         private static void SetProperty<TEntity>(TEntity target, string propertyName, object value) where TEntity : Entity
         {
             var property = target.GetType().GetProperty(propertyName);
-            if (property != null && property.CanWrite)
-            {
-                property.SetValue(target, value);
-            }
+            property?.SetValue(target, value);
         }
     }
 }
