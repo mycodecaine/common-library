@@ -43,8 +43,8 @@
         "MongoDbSetting__ConnectionString": "mongodb://localhost:27017",
         "MongoDbSetting__DatabaseName": "Sportivo",
         "MongoDbSetting__IsStandalone": "true",
-        "TwilioSetting__AccountSid": "AC6233112251069d85d5b6d9065fbdfd81",
-        "TwilioSetting__AuthToken": "c900329db34b294f86f2f91a1b471fa1",
+        "TwilioSetting__AccountSid": "XXXXXXX",
+        "TwilioSetting__AuthToken": "XXXXXXX",
         "TwilioSetting__FromPhoneNumber": "+183823119XX"
 
       },
