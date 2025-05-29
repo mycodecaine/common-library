@@ -42,7 +42,15 @@
         "StorageProvider__EndPoint": "http://localhost:19000",
         "MongoDbSetting__ConnectionString": "mongodb://localhost:27017",
         "MongoDbSetting__DatabaseName": "Sportivo",
-        "MongoDbSetting__IsStandalone": "true"
+        "MongoDbSetting__IsStandalone": "true",
+        "TwilioSetting__AccountSid": "",
+        "TwilioSetting__AuthToken": "",
+        "TwilioSetting__FromPhoneNumber": "",
+        "FluentEmailSetting__FromEmail": "",
+        "FluentEmailSetting__SmtpServer": "",
+        "FluentEmailSetting__SmtpPort": "587",
+        "FluentEmailSetting__SmtpUser": "",
+        "FluentEmailSetting__SmtpPassword": ""
 
       },
       "dotnetRunMessages": true,
