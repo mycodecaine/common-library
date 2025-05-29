@@ -27,6 +27,8 @@ namespace Codecaine.SportService.Application.Mappers
             CreateMap<PlayerPosition, PlayerPositionViewModel>();           
 
             CreateMap<PopularInCountry, PopularInCountryViewModel>();
+
+            CreateMap<Player, PlayerViewModel>();
              
 
         }

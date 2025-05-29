@@ -8,22 +8,22 @@
         /// <summary>
         /// Gets the created on date and time in UTC format.
         /// </summary>
-        DateTime CreatedOnUtc { get; }
+        DateTime CreatedOnUtc { get;  }
 
         /// <summary>
         /// Gets the modified on date and time in UTC format.
         /// </summary>
-        DateTime? ModifiedOnUtc { get; }
+        DateTime? ModifiedOnUtc { get;  }
 
         /// <summary>
         /// Created By
         /// </summary>
-        Guid? CreatedBy { get; }
+        Guid? CreatedBy { get;  }
 
         /// <summary>
         /// ModifiedBy
         /// </summary>
-        Guid? ModifiedBy { get; }
+        Guid? ModifiedBy { get;  }
 
     }
 }

@@ -1,6 +1,4 @@
-﻿using Amazon.S3;
-using Codecaine.Common;
-using Codecaine.Common.Abstractions;
+﻿using Codecaine.Common;
 using Codecaine.Common.AspNetCore.OpenApi;
 using Codecaine.Common.Authentication;
 using Codecaine.Common.Authentication.Providers.KeyCloak;
@@ -8,25 +6,30 @@ using Codecaine.Common.Authentication.Providers.KeyCloak.Setting;
 using Codecaine.Common.Caching;
 using Codecaine.Common.Caching.Redis;
 using Codecaine.Common.Caching.Settings;
-using Codecaine.Common.Correlation;
+using Codecaine.Common.Domain;
 using Codecaine.Common.Messaging;
 using Codecaine.Common.Messaging.MassTransit;
 using Codecaine.Common.Persistence;
 using Codecaine.Common.Persistence.EfCore.Interfaces;
+using Codecaine.Common.Persistence.MongoDB;
+using Codecaine.Common.Persistence.MongoDB.Interfaces;
 using Codecaine.Common.Storage;
 using Codecaine.Common.Storage.Factory;
 using Codecaine.Common.Storage.Providers.AmazonS3.Wrapper;
 using Codecaine.Common.Storage.Providers.Minio;
+using Codecaine.SportService.Domain.Entities;
 using Codecaine.SportService.Domain.Repositories;
 using Codecaine.SportService.Infrastructure.DataAccess;
 using Codecaine.SportService.Infrastructure.DataAccess.Repositories;
 using Codecaine.SportService.Infrastructure.Messaging;
 using MassTransit;
-using MassTransit.Caching.Internals;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Serializers;
 
 
 
@@ -42,9 +45,35 @@ namespace Codecaine.SportService.Infrastructure
             services.AddScoped<IDbContext>(serviceProvider => serviceProvider.GetRequiredService<DataContext>());
             services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<DataContext>());
 
+            // Persistence MongoDb
+           
+            services.AddOptions<MongoDbSetting>().BindConfiguration("MongoDbSetting"); 
+            services.AddScoped<MongoDbContext>(); // Register the implementation once
+            services.AddScoped<IMongoDbContext>(sp => sp.GetRequiredService<MongoDbContext>());
+            services.AddScoped<INoSqlUnitOfWork>(sp => sp.GetRequiredService<MongoDbContext>());
+
+            BsonClassMap.RegisterClassMap<Entity>(cm =>
+            {
+                cm.AutoMap();
+                cm.MapMember(p => p.Id).SetSerializer(new GuidSerializer(GuidRepresentation.Standard));
+            });
+
+            BsonClassMap.RegisterClassMap<Player>(cm =>
+            {
+                cm.AutoMap();
+                var guidSerializer = new GuidSerializer(GuidRepresentation.Standard);
+
+                cm.MapMember(p => p.CreatedBy)
+                  .SetSerializer(new NullableSerializer<Guid>(guidSerializer));
+
+                cm.MapMember(p => p.ModifiedBy)
+                  .SetSerializer(new NullableSerializer<Guid>(guidSerializer));
+            });
+
             // Repositories
             services.AddScoped<ISportTypeRepository, SportTypeRepository>();
             services.AddScoped<ISportVariantRepository, SportVariantRepository>();
+            services.AddScoped<IPlayerRepository, PlayerRepository>();
 
             // MassTransit Publisher
             services.AddScoped<IMessagePublisher, MessagePublisher>();
@@ -75,8 +104,6 @@ namespace Codecaine.SportService.Infrastructure
 
                 options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
             });
-
-
 
             services.AddAuthorization();
 

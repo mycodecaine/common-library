@@ -15,7 +15,7 @@ namespace Codecaine.SportService.Presentation.WebApi
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            var builder = WebApplication.CreateBuilder(args);           
 
 
             // Add Telemetry Service from common library
@@ -44,7 +44,7 @@ namespace Codecaine.SportService.Presentation.WebApi
 
 
             // Temporary Solution before implementing Authentication with keycloak
-            builder.Services.AddScoped<IRequestContext, RequestContext>();
+            builder.Services.AddScoped<IRequestContext, MockRequestContext>();
 
             var app = builder.Build();
 

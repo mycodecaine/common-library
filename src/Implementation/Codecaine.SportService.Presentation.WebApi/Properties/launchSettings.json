@@ -39,7 +39,10 @@
         "StorageProvider__SecretKey": "l6xBGjEdwQ4tJNNyOtsd5Zw2nKmQRIpmz5rp1Pis",
         "StorageProvider__BucketName": "ipe-logger-configs-dev",
         "StorageProvider__Region": "default-region",
-        "StorageProvider__EndPoint": "http://localhost:19000"
+        "StorageProvider__EndPoint": "http://localhost:19000",
+        "MongoDbSetting__ConnectionString": "mongodb://localhost:27017",
+        "MongoDbSetting__DatabaseName": "Sportivo",
+        "MongoDbSetting__IsStandalone": "true"
 
       },
       "dotnetRunMessages": true,
