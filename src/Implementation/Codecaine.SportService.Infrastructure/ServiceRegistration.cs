@@ -145,12 +145,17 @@ namespace Codecaine.SportService.Infrastructure
             services.AddScoped<INotificationChannelSender, SmsNotificationSender>();
 
             // Notification Email
-            services.AddFluentEmail("iheemi@gmail.com")
+            var fromEmail = Environment.GetEnvironmentVariable("FluentEmailSetting__FromEmail");
+            var smtpServer = Environment.GetEnvironmentVariable("FluentEmailSetting__SmtpServer");
+            var smtpPort = Environment.GetEnvironmentVariable("FluentEmailSetting__SmtpPort");
+            var smtpUser = Environment.GetEnvironmentVariable("FluentEmailSetting__SmtpUser");
+            var smtpPassword = Environment.GetEnvironmentVariable("FluentEmailSetting__SmtpPassword");
+            services.AddFluentEmail(fromEmail)
                 .AddRazorRenderer()
-                .AddSmtpSender(new SmtpClient("smtp.gmail.com")
+                .AddSmtpSender(new SmtpClient(smtpServer)
                     {
-                         Port = 587,
-                         Credentials = new System.Net.NetworkCredential("iheemi@gmail.com", "XXXX"),
+                         Port = int.Parse(smtpPort),
+                         Credentials = new System.Net.NetworkCredential(smtpUser, smtpPassword),
                          EnableSsl = true,
                     });
 

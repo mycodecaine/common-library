@@ -45,7 +45,12 @@
         "MongoDbSetting__IsStandalone": "true",
         "TwilioSetting__AccountSid": "",
         "TwilioSetting__AuthToken": "",
-        "TwilioSetting__FromPhoneNumber": ""
+        "TwilioSetting__FromPhoneNumber": "",
+        "FluentEmailSetting__FromEmail": "",
+        "FluentEmailSetting__SmtpServer": "",
+        "FluentEmailSetting__SmtpPort": "587",
+        "FluentEmailSetting__SmtpUser": "",
+        "FluentEmailSetting__SmtpPassword": ""
 
       },
       "dotnetRunMessages": true,
