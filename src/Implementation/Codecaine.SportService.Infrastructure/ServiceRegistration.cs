@@ -150,9 +150,12 @@ namespace Codecaine.SportService.Infrastructure
                 .AddSmtpSender(new SmtpClient("smtp.gmail.com")
                     {
                          Port = 587,
-                         Credentials = new System.Net.NetworkCredential("iheemi@gmail.com", "XXXXXX"),
+                         Credentials = new System.Net.NetworkCredential("iheemi@gmail.com", "XXXX"),
                          EnableSsl = true,
                     });
+
+            // Notification Whatsapp
+            services.AddOptions<WhatsappSetting>().BindConfiguration(WhatsappSetting.DefaultSectionName);
 
 
             return services;
