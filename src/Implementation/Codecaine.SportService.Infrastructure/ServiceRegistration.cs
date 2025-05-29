@@ -9,6 +9,10 @@ using Codecaine.Common.Caching.Settings;
 using Codecaine.Common.Domain;
 using Codecaine.Common.Messaging;
 using Codecaine.Common.Messaging.MassTransit;
+using Codecaine.Common.Notifications;
+using Codecaine.Common.Notifications.Email;
+using Codecaine.Common.Notifications.Sms;
+using Codecaine.Common.Notifications.Whatsapp;
 using Codecaine.Common.Persistence;
 using Codecaine.Common.Persistence.EfCore.Interfaces;
 using Codecaine.Common.Persistence.MongoDB;
@@ -25,11 +29,11 @@ using Codecaine.SportService.Infrastructure.Messaging;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
+using System.Net.Mail;
 
 
 
@@ -46,8 +50,8 @@ namespace Codecaine.SportService.Infrastructure
             services.AddScoped<IUnitOfWork>(serviceProvider => serviceProvider.GetRequiredService<DataContext>());
 
             // Persistence MongoDb
-           
-            services.AddOptions<MongoDbSetting>().BindConfiguration("MongoDbSetting"); 
+
+            services.AddOptions<MongoDbSetting>().BindConfiguration("MongoDbSetting");
             services.AddScoped<MongoDbContext>(); // Register the implementation once
             services.AddScoped<IMongoDbContext>(sp => sp.GetRequiredService<MongoDbContext>());
             services.AddScoped<INoSqlUnitOfWork>(sp => sp.GetRequiredService<MongoDbContext>());
@@ -133,6 +137,22 @@ namespace Codecaine.SportService.Infrastructure
                 var storageProviderFactory = sp.GetRequiredService<IStorageProviderFactory>();
                 return storageProviderFactory.CreateProvider(minioProvider);
             });
+
+            // Notification
+            services.AddScoped<INotificationSender, NotificationDispatcher>();
+            services.AddScoped<INotificationChannelSender, EmailNotificationSender>();
+            services.AddScoped<INotificationChannelSender, WhatsappNotificationSender>();
+            services.AddScoped<INotificationChannelSender, SmsNotificationSender>();
+
+            // Notification Email
+            services.AddFluentEmail("iheemi@gmail.com")
+                .AddRazorRenderer()
+                .AddSmtpSender(new SmtpClient("smtp.gmail.com")
+                    {
+                         Port = 587,
+                         Credentials = new System.Net.NetworkCredential("iheemi@gmail.com", "XXXXXX"),
+                         EnableSsl = true,
+                    });
 
 
             return services;
