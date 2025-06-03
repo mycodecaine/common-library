@@ -4,6 +4,7 @@ using Codecaine.Common.Persistence.MongoDB.Interfaces;
 using Codecaine.Common.Primitives.Maybe;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
+using System.Linq.Expressions;
 
 namespace Codecaine.Common.Persistence.MongoDB
 {
@@ -31,9 +32,35 @@ namespace Codecaine.Common.Persistence.MongoDB
             return await Context.GetBydIdAsync<TEntity>(id);
         }
 
-        public Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, ISpecification<TEntity>? specification = null, string? sortBy = null, bool sortDescending = false, CancellationToken cancellationToken = default)
+        public async Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, ISpecification<TEntity>? specification = null, string? sortBy = null, bool sortDescending = false, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            IQueryable<TEntity> query = Context.AsQueryable<TEntity>(typeof(TEntity).Name);
+
+            if (specification != null)
+            {
+                query = query.Where(specification.Criteria);
+            }
+
+            var skip = (page - 1) * pageSize;
+
+            if (!string.IsNullOrWhiteSpace(sortBy))
+            {
+                var parameter = Expression.Parameter(typeof(TEntity), "x");
+                var property = Expression.Property(parameter, sortBy);
+                var lambda = Expression.Lambda(property, parameter);
+
+                string method = sortDescending ? "OrderByDescending" : "OrderBy";
+                var methodCall = typeof(Queryable).GetMethods()
+                    .First(m => m.Name == method && m.GetParameters().Length == 2)
+                    .MakeGenericMethod(typeof(TEntity), property.Type);
+
+                query = (IQueryable<TEntity>)methodCall.Invoke(null, new object[] { query, lambda })!;
+            }
+
+            var totalCount = await query.CountAsync(cancellationToken);
+            var items = await query.Skip(skip).Take(pageSize).ToListAsync(cancellationToken);
+
+            return (items, totalCount);
         }
 
         public void Insert(TEntity entity)
@@ -52,17 +79,21 @@ namespace Codecaine.Common.Persistence.MongoDB
         }
 
         protected async Task<bool> AnyAsync(Specification<TEntity> specification) =>
-            await Context.GetCollection<TEntity>(typeof(TEntity).Name).AsQueryable().AnyAsync(specification);
+            await Context.AsQueryable<TEntity>(typeof(TEntity).Name).AnyAsync(specification);
 
         protected async Task<Maybe<TEntity?>> FirstOrDefaultAsync(Specification<TEntity> specification)
         {
-            return await Context.GetCollection<TEntity>(typeof(TEntity).Name).AsQueryable().FirstOrDefaultAsync(specification);
+            return await Context.AsQueryable<TEntity>(typeof(TEntity).Name).FirstOrDefaultAsync(specification);
         }
 
         protected async Task<Maybe<List<TEntity>>> Where(Specification<TEntity> specification)
         {
-            return await Context.GetCollection<TEntity>(typeof(TEntity).Name).AsQueryable().Where(specification).ToListAsync();
+            return await Context.AsQueryable<TEntity>(typeof(TEntity).Name).Where(specification).ToListAsync();
         }
 
+        public Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(Specification<TEntity> spec, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

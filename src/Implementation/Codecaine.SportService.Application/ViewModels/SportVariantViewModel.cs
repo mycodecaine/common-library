@@ -31,6 +31,7 @@ namespace Codecaine.SportService.Application.ViewModels
         string ImageUrl,
         bool IsOlympic,
         Guid SportTypeId,
+        String? SportTypeName,
         ScoringSystem RuleScoringSystem,
         int RulePlayerCount,
         int? RuleGameDuration,

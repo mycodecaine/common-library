@@ -19,6 +19,7 @@ namespace Codecaine.SportService.Infrastructure.DataAccess.Specifications.SportV
         {
             _name = name;
             _sportTypeId = sportTypeId;
+            AddInclude(sportVariant => sportVariant.SportType);
         }
         public override Expression<Func<SportVariant, bool>> ToExpression()
         => sportVariant => sportVariant.Name.Trim().ToLower() == _name.Trim().ToLower() && sportVariant.SportTypeId == _sportTypeId && !sportVariant.Deleted;

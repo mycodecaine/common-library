@@ -3,10 +3,12 @@ using Codecaine.Common.Pagination.Interfaces;
 using Codecaine.Common.Persistence.EfCore.Interfaces;
 using Codecaine.Common.Primitives.Maybe;
 using Microsoft.EntityFrameworkCore;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Linq.Dynamic.Core; 
 using System.Text;
 using System.Threading.Tasks;
 
@@ -96,7 +98,8 @@ namespace Codecaine.Common.Persistence.EfCore
         /// <returns></returns>
         protected async Task<Maybe<List<TEntity>>> Where(Specification<TEntity> specification)
         {
-            return await DbContext.Set<TEntity>().Where(specification).ToListAsync();
+            var query = ApplySpecification(specification);
+            return await query.ToListAsync();
         }
 
         /// <summary>
@@ -138,6 +141,66 @@ namespace Codecaine.Common.Persistence.EfCore
             var items = await query.Skip(skip).Take(pageSize).ToListAsync(cancellationToken);
 
             return (items, totalCount);
+        }
+
+        public async Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(Specification<TEntity> spec, CancellationToken cancellationToken = default)
+        {
+            IQueryable<TEntity> query = DbContext.Set<TEntity>();
+
+            // Filter
+            query = query.Where(spec.ToExpression());
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            // Includes
+            foreach (var include in spec.Includes)
+                query = query.Include(include);
+
+            if (!string.IsNullOrEmpty(spec.OrderByString))
+            {
+                query = query.OrderBy(spec.OrderByString); // Uses Dynamic LINQ
+            }
+            else if (!string.IsNullOrEmpty(spec.OrderByDescendingString))
+            {
+                query = query.OrderBy($"{spec.OrderByDescendingString} descending");
+            }
+
+            if (spec.Skip.HasValue && spec.Take.HasValue)
+            {
+                var skip = (spec.Skip.Value - 1) * spec.Take.Value;
+                query = query.Skip(skip).Take(spec.Take.Value);
+            }
+
+
+            var items = await query.ToListAsync(cancellationToken);
+
+            return (items, totalCount);
+        }
+
+        protected IQueryable<TEntity> ApplySpecification(Specification<TEntity> spec)
+        {
+            IQueryable<TEntity> query = DbContext.Set<TEntity>();
+
+            // Filter
+            query = query.Where(spec.ToExpression());
+
+            // Includes
+            foreach (var include in spec.Includes)
+                query = query.Include(include);
+
+            // Sorting
+            if (spec.OrderBy != null)
+                query = query.OrderBy(spec.OrderBy);
+            else if (spec.OrderByDescending != null)
+                query = query.OrderByDescending(spec.OrderByDescending);
+
+            // Paging
+            if (spec.Skip.HasValue)
+                query = query.Skip(spec.Skip.Value);
+            if (spec.Take.HasValue)
+                query = query.Take(spec.Take.Value);
+
+            return query;
         }
     }
 }

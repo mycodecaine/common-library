@@ -123,8 +123,9 @@ namespace Codecaine.Common.Pagination
             var pageCount = (double)result.RowCount / pageSize;
             result.PageCount = (int)Math.Ceiling(pageCount);
 
-            var skip = (page - 1) * pageSize;
-            result.Results = query.Skip(skip).Take(pageSize).ToList();
+            // var skip = (page - 1) * pageSize;
+            // result.Results = query.Skip(skip).Take(pageSize).ToList();
+            result.Results = query.ToList();
 
             return result;
         }

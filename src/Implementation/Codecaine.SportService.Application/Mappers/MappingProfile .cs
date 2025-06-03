@@ -18,6 +18,8 @@ namespace Codecaine.SportService.Application.Mappers
             CreateMap<SportType, SportTypeViewModel>();
 
             CreateMap<SportVariant, SportVariantViewModel>()
+               .ForMember(dest => dest.SportTypeName,
+                       opt => opt.MapFrom(src => src.SportType.Name))
                // Value Object need to Map Manually
                .ForCtorParam("RuleScoringSystem", opt => opt.MapFrom(src => src.Rules.ScoringSystem))
                .ForCtorParam("RulePlayerCount", opt => opt.MapFrom(src => src.Rules.PlayerCount))

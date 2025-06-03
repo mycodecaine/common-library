@@ -59,5 +59,7 @@ namespace Codecaine.Common.Persistence
         string? sortBy = null,
         bool sortDescending = false,
         CancellationToken cancellationToken = default);
+
+        Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(Specification<TEntity> spec, CancellationToken cancellationToken = default);
     }
 }

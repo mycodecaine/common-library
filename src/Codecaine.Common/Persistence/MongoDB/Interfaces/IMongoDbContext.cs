@@ -44,5 +44,7 @@ namespace Codecaine.Common.Persistence.MongoDB.Interfaces
             where TEntity : Entity;
 
         void Update<TEntity>(TEntity entity) where TEntity : Entity;
+
+        IQueryable<T> AsQueryable<T>(string name);
     }
 }

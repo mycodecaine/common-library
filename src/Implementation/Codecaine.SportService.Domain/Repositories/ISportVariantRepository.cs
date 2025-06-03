@@ -12,5 +12,7 @@ namespace Codecaine.SportService.Domain.Repositories
     {
         Task<bool> IsNameExistAsync( Guid sportTypeId, string name);
         Task<bool> IsDuplicateNameAsync(Guid id, Guid sportTypeId, string name);
+        Task<(IEnumerable<SportVariant> Items, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, string? name, string? description,
+            Guid? sportTypeId, string imageUrl, bool? isOlympic, string? sortBy, bool isDescending);
     }
 }
