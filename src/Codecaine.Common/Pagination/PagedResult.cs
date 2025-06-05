@@ -88,16 +88,19 @@ namespace Codecaine.Common.Pagination
         /// <returns>A <see cref="PagedResult{T}"/> object containing the paginated results and pagination details.</returns>
         public static PagedResult<T> GetPaged<T>(this IQueryable<T> query, int totalCount, int page, int pageSize) where T : class
         {
-            var result = new PagedResult<T>();
-            result.CurrentPage = page;
-            result.PageSize = pageSize;
-            result.RowCount = query.Count();
+            var result = new PagedResult<T>
+            {
+                CurrentPage = page,
+                PageSize = pageSize,
+                RowCount = query.Count(),
+                TotalCount = totalCount
+            };
 
-            var pageCount = (double)result.RowCount / pageSize;
+            var pageCount = (double)totalCount / pageSize;
             result.PageCount = (int)Math.Ceiling(pageCount);
 
-            var skip = (page - 1) * pageSize;
-            result.Results = query.Skip(skip).Take(pageSize).ToList();
+            
+            result.Results = query.ToList();
 
             return result;
         }
@@ -106,26 +109,24 @@ namespace Codecaine.Common.Pagination
         /// Paginates an IList collection based on the specified page and page size.
         /// </summary>
         /// <typeparam name="T">The type of the elements in the list.</typeparam>
-        /// <param name="query">The IList collection to paginate.</param>
+        /// <param name="list">The IList collection to paginate.</param>
         /// <param name="page">The page number to retrieve.</param>
         /// <param name="pageSize">The number of items per page.</param>
         /// <returns>A <see cref="PagedResult{T}"/> object containing the paginated results and pagination details.</returns>
-        public static PagedResult<T> GetPaged<T>(this IList<T> query,int totalCount, int page, int pageSize) where T : class
+        public static PagedResult<T> GetPaged<T>(this IList<T> list,int totalCount, int page, int pageSize) where T : class
         {
             var result = new PagedResult<T>
             {
                 CurrentPage = page,
                 PageSize = pageSize,
-                RowCount = query.Count(),
+                RowCount = list.Count(),
                 TotalCount = totalCount 
             };
 
-            var pageCount = (double)result.RowCount / pageSize;
+            var pageCount = (double)totalCount / pageSize;
             result.PageCount = (int)Math.Ceiling(pageCount);
 
-            // var skip = (page - 1) * pageSize;
-            // result.Results = query.Skip(skip).Take(pageSize).ToList();
-            result.Results = query.ToList();
+            result.Results = list;
 
             return result;
         }

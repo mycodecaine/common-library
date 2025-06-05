@@ -2,9 +2,11 @@
 using Codecaine.Common.Pagination.Interfaces;
 using Codecaine.Common.Persistence.MongoDB.Interfaces;
 using Codecaine.Common.Primitives.Maybe;
-using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using System.Linq.Expressions;
+using System.Linq.Dynamic.Core;
+using MongoDB.Driver.Linq;
+
 
 namespace Codecaine.Common.Persistence.MongoDB
 {
@@ -30,6 +32,45 @@ namespace Codecaine.Common.Persistence.MongoDB
         public async Task<Maybe<TEntity>> GetByIdAsync(Guid id)
         {
             return await Context.GetBydIdAsync<TEntity>(id);
+        }
+
+       
+
+        public void Insert(TEntity entity)
+        {
+            Context.Insert(entity);
+        }
+
+        public void Remove(TEntity entity)
+        {
+            Context.Remove(entity);
+        }
+
+        public void Update(TEntity entity)
+        {
+            Context.Update(entity);
+        }
+
+        protected async Task<bool> AnyAsync(Specification<TEntity> specification) =>
+            await Context.AsQueryable<TEntity>(typeof(TEntity).Name).AnyAsync(specification);
+
+        protected async Task<Maybe<TEntity?>> FirstOrDefaultAsync(Specification<TEntity> specification)
+        {
+            return await Context.AsQueryable<TEntity>(typeof(TEntity).Name).FirstOrDefaultAsync(specification);
+        }
+
+        protected async Task<Maybe<List<TEntity>>> Where(Specification<TEntity> specification)
+        {
+            return await Context.AsQueryable<TEntity>(typeof(TEntity).Name).Where(specification).ToListAsync();
+        }
+
+        public async Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(Specification<TEntity> spec, CancellationToken cancellationToken = default)
+        {
+            var (query, totalCount) = ApplySpecification(spec);
+
+            var items = await query.ToListAsync(cancellationToken);
+
+            return (items, totalCount);
         }
 
         public async Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(int page, int pageSize, ISpecification<TEntity>? specification = null, string? sortBy = null, bool sortDescending = false, CancellationToken cancellationToken = default)
@@ -63,37 +104,40 @@ namespace Codecaine.Common.Persistence.MongoDB
             return (items, totalCount);
         }
 
-        public void Insert(TEntity entity)
+        protected (IQueryable<TEntity>, int TotalCount) ApplySpecification(Specification<TEntity> spec)
         {
-            Context.Insert(entity);
-        }
+            IQueryable<TEntity> query = Context.AsQueryable<TEntity>(typeof(TEntity).Name);
+            // Filter
+            query = query.Where(spec.ToExpression());
 
-        public void Remove(TEntity entity)
-        {
-            Context.Remove(entity);
-        }
+            var totalCount = query.Count();           
 
-        public void Update(TEntity entity)
-        {
-            Context.Update(entity);
-        }
+            if ((spec.PageNumber.HasValue || spec.PageSize.HasValue) && string.IsNullOrEmpty(spec.OrderByString) && string.IsNullOrEmpty(spec.OrderByDescendingString))
+            {
+                query = query.OrderBy("Id"); // or whatever is your default ordering key
+            }
 
-        protected async Task<bool> AnyAsync(Specification<TEntity> specification) =>
-            await Context.AsQueryable<TEntity>(typeof(TEntity).Name).AnyAsync(specification);
+            if (!string.IsNullOrEmpty(spec.OrderByString))
+            {
+                query = query.OrderBy(spec.OrderByString); // Uses Dynamic LINQ
+            }
+            else if (!string.IsNullOrEmpty(spec.OrderByDescendingString))
+            {
+                query = query.OrderBy($"{spec.OrderByDescendingString} descending");
+            }
 
-        protected async Task<Maybe<TEntity?>> FirstOrDefaultAsync(Specification<TEntity> specification)
-        {
-            return await Context.AsQueryable<TEntity>(typeof(TEntity).Name).FirstOrDefaultAsync(specification);
-        }
+            if (spec.PageNumber.HasValue)
+            {
+                var skip = (spec.PageNumber.Value - 1) * (spec.PageSize.HasValue ? spec.PageSize.Value : 1);
+                query = query.Skip(skip);
+            }
 
-        protected async Task<Maybe<List<TEntity>>> Where(Specification<TEntity> specification)
-        {
-            return await Context.AsQueryable<TEntity>(typeof(TEntity).Name).Where(specification).ToListAsync();
-        }
+            if (spec.PageSize.HasValue)
+            {
+                query = query.Take(spec.PageSize.Value);
+            }
 
-        public Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(Specification<TEntity> spec, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
+            return (query, totalCount);
         }
     }
 }

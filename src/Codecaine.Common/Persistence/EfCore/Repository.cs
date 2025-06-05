@@ -3,14 +3,8 @@ using Codecaine.Common.Pagination.Interfaces;
 using Codecaine.Common.Persistence.EfCore.Interfaces;
 using Codecaine.Common.Primitives.Maybe;
 using Microsoft.EntityFrameworkCore;
-using Polly;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
-using System.Linq.Dynamic.Core; 
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Codecaine.Common.Persistence.EfCore
 {
@@ -98,7 +92,7 @@ namespace Codecaine.Common.Persistence.EfCore
         /// <returns></returns>
         protected async Task<Maybe<List<TEntity>>> Where(Specification<TEntity> specification)
         {
-            var query = ApplySpecification(specification);
+            var (query,_) = ApplySpecification(specification);
             return await query.ToListAsync();
         }
 
@@ -143,18 +137,33 @@ namespace Codecaine.Common.Persistence.EfCore
             return (items, totalCount);
         }
 
-        public async Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(Specification<TEntity> spec, CancellationToken cancellationToken = default)
+        public async Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(Specification<TEntity> spec, CancellationToken cancellationToken = default)        {
+            
+
+            var (query, totalCount) = ApplySpecification(spec);
+
+            var items = await query.ToListAsync(cancellationToken);
+
+            return (items, totalCount);
+        }
+
+        protected (IQueryable<TEntity>, int TotalCount) ApplySpecification(Specification<TEntity> spec)
         {
             IQueryable<TEntity> query = DbContext.Set<TEntity>();
 
             // Filter
             query = query.Where(spec.ToExpression());
 
-            var totalCount = await query.CountAsync(cancellationToken);
+            var totalCount =  query.Count();
 
             // Includes
             foreach (var include in spec.Includes)
                 query = query.Include(include);
+
+            if ((spec.PageNumber.HasValue || spec.PageSize.HasValue) && string.IsNullOrEmpty(spec.OrderByString) && string.IsNullOrEmpty(spec.OrderByDescendingString))
+            {
+                query = query.OrderBy("Id"); // or whatever is your default ordering key
+            }
 
             if (!string.IsNullOrEmpty(spec.OrderByString))
             {
@@ -165,42 +174,18 @@ namespace Codecaine.Common.Persistence.EfCore
                 query = query.OrderBy($"{spec.OrderByDescendingString} descending");
             }
 
-            if (spec.Skip.HasValue && spec.Take.HasValue)
+            if (spec.PageNumber.HasValue)
             {
-                var skip = (spec.Skip.Value - 1) * spec.Take.Value;
-                query = query.Skip(skip).Take(spec.Take.Value);
+                var skip = (spec.PageNumber.Value - 1) * (spec.PageSize.HasValue ? spec.PageSize.Value : 1);
+                query = query.Skip(skip);
             }
 
+            if (spec.PageSize.HasValue)
+            {
+                query = query.Take(spec.PageSize.Value);
+            }            
 
-            var items = await query.ToListAsync(cancellationToken);
-
-            return (items, totalCount);
-        }
-
-        protected IQueryable<TEntity> ApplySpecification(Specification<TEntity> spec)
-        {
-            IQueryable<TEntity> query = DbContext.Set<TEntity>();
-
-            // Filter
-            query = query.Where(spec.ToExpression());
-
-            // Includes
-            foreach (var include in spec.Includes)
-                query = query.Include(include);
-
-            // Sorting
-            if (spec.OrderBy != null)
-                query = query.OrderBy(spec.OrderBy);
-            else if (spec.OrderByDescending != null)
-                query = query.OrderByDescending(spec.OrderByDescending);
-
-            // Paging
-            if (spec.Skip.HasValue)
-                query = query.Skip(spec.Skip.Value);
-            if (spec.Take.HasValue)
-                query = query.Take(spec.Take.Value);
-
-            return query;
+            return (query, totalCount);
         }
     }
 }
