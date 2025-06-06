@@ -17,6 +17,7 @@
         "ASPNETCORE_HTTPS_PORT": "7283",
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ConnectionString__DataBase": "Server=127.0.0.1;Database=SportDb;User=sa;Password=P@ssW0rd;TrustServerCertificate=True",
+        "ConnectionString__DapperDataBase": "http://localhost:9200",
         "RabbitMq__Host": "localhost",
         "RabbitMq__UserName": "guest",
         "RabbitMq__Password": "guest",

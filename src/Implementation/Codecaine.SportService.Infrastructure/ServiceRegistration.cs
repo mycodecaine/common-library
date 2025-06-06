@@ -14,6 +14,8 @@ using Codecaine.Common.Notifications.Email;
 using Codecaine.Common.Notifications.Sms;
 using Codecaine.Common.Notifications.Whatsapp;
 using Codecaine.Common.Persistence;
+using Codecaine.Common.Persistence.Dapper;
+using Codecaine.Common.Persistence.Dapper.Interfaces;
 using Codecaine.Common.Persistence.EfCore.Interfaces;
 using Codecaine.Common.Persistence.MongoDB;
 using Codecaine.Common.Persistence.MongoDB.Interfaces;
@@ -29,10 +31,13 @@ using Codecaine.SportService.Infrastructure.Messaging;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Bson.Serialization.Serializers;
+using Npgsql;
+using System.Data;
 using System.Net.Mail;
 
 
@@ -56,6 +61,7 @@ namespace Codecaine.SportService.Infrastructure
             services.AddScoped<IMongoDbContext>(sp => sp.GetRequiredService<MongoDbContext>());
             services.AddScoped<INoSqlUnitOfWork>(sp => sp.GetRequiredService<MongoDbContext>());
 
+
             BsonClassMap.RegisterClassMap<Entity>(cm =>
             {
                 cm.AutoMap();
@@ -73,6 +79,18 @@ namespace Codecaine.SportService.Infrastructure
                 cm.MapMember(p => p.ModifiedBy)
                   .SetSerializer(new NullableSerializer<Guid>(guidSerializer));
             });
+
+            // Persistence Dapper - NpgSql (Postgres)
+            string dapperConnectionString = Environment.GetEnvironmentVariable("ConnectionString__DapperDataBase") ?? "";
+            services.AddScoped<IDbConnection>(sp =>
+            {                
+                var conn = new NpgsqlConnection(dapperConnectionString);
+                conn.Open(); // Ensure it’s opened before using
+                return conn;
+            });
+            services.AddScoped<DapperDbContext>(); // Register the implementation once
+            services.AddScoped<IDapperDbContext>(sp => sp.GetRequiredService<DapperDbContext>());
+            services.AddScoped<IDapperUnitOfWork>(sp => sp.GetRequiredService<DapperDbContext>());
 
             // Repositories
             services.AddScoped<ISportTypeRepository, SportTypeRepository>();
