@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Codecaine.SportService.Infrastructure.DataAccess.Repositories
 {
-    internal sealed class SportVariantRepository: Repository<SportVariant>, ISportVariantRepository
+    internal sealed class SportVariantRepository : Repository<SportVariant>, ISportVariantRepository
     {
         public SportVariantRepository(IDbContext context) : base(context)
         {
@@ -18,19 +18,24 @@ namespace Codecaine.SportService.Infrastructure.DataAccess.Repositories
 
         public async override Task<Maybe<SportVariant>> GetByIdAsync(Guid id)
         {
-            var order = await DbContext.Set<SportVariant>().Include(a => a.SportType ).Include(x=>x.PlayerPositions).Include(x=>x.PopularInCountries).FirstOrDefaultAsync(x => x.Id == id);
+            var order = await DbContext.Set<SportVariant>().Include(a => a.SportType).Include(x => x.PlayerPositions).Include(x => x.PopularInCountries).FirstOrDefaultAsync(x => x.Id == id);
             return order;
         }
 
         public Task<bool> IsDuplicateNameAsync(Guid id, Guid sportTypeId, string name)
         {
-            return AnyAsync(new SportVariantDuplicateNameWithDifferentIdSpecification(name,id, sportTypeId));
+            return AnyAsync(new SportVariantDuplicateNameWithDifferentIdSpecification(name, id, sportTypeId));
         }
 
         public Task<bool> IsNameExistAsync(Guid sportTypeId, string name)
         {
-            return AnyAsync(new SportVariantWithNameSpecification(  name, sportTypeId));
+            return AnyAsync(new SportVariantWithNameSpecification(name, sportTypeId));
+        }       
+        public async Task<(IEnumerable<SportVariant> Items, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, string? name, string? description, Guid? sportTypeId, string imageUrl, bool? isOlympic, string? sortBy, bool isDescending)
+        {
+            var specification = new SportVariantFilteringSpecification(pageNumber,pageSize, name, description, sportTypeId, imageUrl, isOlympic, sortBy, isDescending);
+            return await GetPagedAsync(specification);
         }
+
     }
-    
 }

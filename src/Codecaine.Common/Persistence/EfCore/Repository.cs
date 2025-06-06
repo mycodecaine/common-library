@@ -3,12 +3,8 @@ using Codecaine.Common.Pagination.Interfaces;
 using Codecaine.Common.Persistence.EfCore.Interfaces;
 using Codecaine.Common.Primitives.Maybe;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Codecaine.Common.Persistence.EfCore
 {
@@ -96,7 +92,8 @@ namespace Codecaine.Common.Persistence.EfCore
         /// <returns></returns>
         protected async Task<Maybe<List<TEntity>>> Where(Specification<TEntity> specification)
         {
-            return await DbContext.Set<TEntity>().Where(specification).ToListAsync();
+            var (query,_) = ApplySpecification(specification);
+            return await query.ToListAsync();
         }
 
         /// <summary>
@@ -138,6 +135,57 @@ namespace Codecaine.Common.Persistence.EfCore
             var items = await query.Skip(skip).Take(pageSize).ToListAsync(cancellationToken);
 
             return (items, totalCount);
+        }
+
+        public async Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(Specification<TEntity> spec, CancellationToken cancellationToken = default)        {
+            
+
+            var (query, totalCount) = ApplySpecification(spec);
+
+            var items = await query.ToListAsync(cancellationToken);
+
+            return (items, totalCount);
+        }
+
+        protected (IQueryable<TEntity>, int TotalCount) ApplySpecification(Specification<TEntity> spec)
+        {
+            IQueryable<TEntity> query = DbContext.Set<TEntity>();
+
+            // Filter
+            query = query.Where(spec.ToExpression());
+
+            var totalCount =  query.Count();
+
+            // Includes
+            foreach (var include in spec.Includes)
+                query = query.Include(include);
+
+            if ((spec.PageNumber.HasValue || spec.PageSize.HasValue) && string.IsNullOrEmpty(spec.OrderByString) && string.IsNullOrEmpty(spec.OrderByDescendingString))
+            {
+                query = query.OrderBy("Id"); // or whatever is your default ordering key
+            }
+
+            if (!string.IsNullOrEmpty(spec.OrderByString))
+            {
+                query = query.OrderBy(spec.OrderByString); // Uses Dynamic LINQ
+            }
+            else if (!string.IsNullOrEmpty(spec.OrderByDescendingString))
+            {
+                query = query.OrderBy($"{spec.OrderByDescendingString} descending");
+            }
+
+            if (spec.PageNumber.HasValue)
+            {
+                var skip = (spec.PageNumber.Value - 1) * (spec.PageSize.HasValue ? spec.PageSize.Value : 1);
+                query = query.Skip(skip);
+            }
+
+            if (spec.PageSize.HasValue)
+            {
+                query = query.Take(spec.PageSize.Value);
+            }            
+
+            return (query, totalCount);
         }
     }
 }

@@ -20,6 +20,6 @@ namespace Codecaine.SportService.Infrastructure.DataAccess.Specifications.SportV
         }
         public override Expression<Func<SportVariant, bool>> ToExpression()
         => sportType => !sportType.Deleted && sportType.Name.Trim().ToLower() == _name.Trim().ToLower() 
-            && sportType.Id != _id && sportType.SportTypeId == _sportTypeId;
+            && sportType.Id != _id && sportType.SportTypeId == _sportTypeId ;
     }
 }

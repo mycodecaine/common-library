@@ -44,6 +44,11 @@ namespace Codecaine.Common.Persistence.MongoDB
             return _database.GetCollection<T>(name);
         }
 
+        public IQueryable<T> AsQueryable<T>(string name)
+        {
+            return _database.GetCollection<T>(name).AsQueryable();
+        }
+
         public void Insert<TEntity>(TEntity entity) where TEntity : Entity
         {
 
@@ -141,9 +146,7 @@ namespace Codecaine.Common.Persistence.MongoDB
                 throw new InvalidOperationException("Failed to commit transaction", ex);
             }
 
-        }
-
-       
+        }    
 
 
 

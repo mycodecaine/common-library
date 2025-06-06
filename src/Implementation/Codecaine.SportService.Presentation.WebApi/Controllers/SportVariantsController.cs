@@ -1,11 +1,14 @@
 ﻿using Asp.Versioning;
 using Codecaine.Common.Errors;
+using Codecaine.Common.Pagination;
 using Codecaine.Common.Primitives.Maybe;
 using Codecaine.Common.Primitives.Result;
+using Codecaine.SportService.Application.UseCases.SportTypes.Queries.SearchSportTypeByName;
 using Codecaine.SportService.Application.UseCases.SportVariants.Commands.CreateSportVariant;
 using Codecaine.SportService.Application.UseCases.SportVariants.Commands.RemovePopularInCountry;
 using Codecaine.SportService.Application.UseCases.SportVariants.Commands.UpdateSportVariant;
 using Codecaine.SportService.Application.UseCases.SportVariants.Queries.GetSportVariantById;
+using Codecaine.SportService.Application.UseCases.SportVariants.Queries.SearchSportVariant;
 using Codecaine.SportService.Application.ViewModels;
 using Codecaine.SportService.Presentation.WebApi.DTOs.SportVariants;
 using MediatR;
@@ -65,5 +68,13 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
              .From(new GetSportVariantByIdQuery(id))
              .Bind(query => Mediator.Send(query))
              .Match(Ok, NotFound);
+
+        [HttpGet("page/{pageNumber}/pageSize/{pageSize}")]
+        [ProducesResponseType(typeof(PagedResult<SportVariantViewModel>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> SearchByName(int pageNumber, int pageSize, string? name, string? description, Guid? sportTypeId, string? imageUrl, bool? isOlympic, string? sortBy = nameof(SportVariantViewModel.Name) , bool isDesc = false) =>
+        await Maybe<SearchSportVariantQuery>
+            .From(new SearchSportVariantQuery(pageNumber, pageSize, name, description, sportTypeId,imageUrl,isOlympic, sortBy, isDesc))
+            .Bind(query => Mediator.Send(query))
+            .Match(Ok, NotFound);
     }
 }

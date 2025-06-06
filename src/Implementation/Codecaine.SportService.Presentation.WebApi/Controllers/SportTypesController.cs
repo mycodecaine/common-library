@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using Codecaine.Common.Errors;
+using Codecaine.Common.Pagination;
 using Codecaine.Common.Primitives.Maybe;
 using Codecaine.Common.Primitives.Result;
 using Codecaine.Common.Storage;
@@ -104,7 +105,7 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
         /// <param name="name"></param>
         /// <returns></returns>
         [HttpGet("page/{page}/pageSize/{pageSize}/name/{name?}")]
-        [ProducesResponseType(typeof(SportTypeViewModel), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PagedResult<SportTypeViewModel>), StatusCodes.Status200OK)]
         public async Task<IActionResult> SearchByName(int page, int pageSize, string name = " ") =>
          await Maybe<SearchSportTypeByNameQuery>
              .From(new SearchSportTypeByNameQuery(page, pageSize, name))
