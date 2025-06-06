@@ -146,9 +146,7 @@ namespace Codecaine.Common.Persistence.MongoDB
                 throw new InvalidOperationException("Failed to commit transaction", ex);
             }
 
-        }
-
-       
+        }    
 
 
 
