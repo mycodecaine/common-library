@@ -13,6 +13,8 @@ using Codecaine.Common.Notifications;
 using Codecaine.Common.Notifications.Email;
 using Codecaine.Common.Notifications.Sms;
 using Codecaine.Common.Notifications.Whatsapp;
+using Codecaine.Common.OpenAiServices;
+using Codecaine.Common.OpenAiServices.Interfaces;
 using Codecaine.Common.Persistence;
 using Codecaine.Common.Persistence.Dapper;
 using Codecaine.Common.Persistence.Dapper.Interfaces;
@@ -96,6 +98,7 @@ namespace Codecaine.SportService.Infrastructure
             services.AddScoped<ISportTypeRepository, SportTypeRepository>();
             services.AddScoped<ISportVariantRepository, SportVariantRepository>();
             services.AddScoped<IPlayerRepository, PlayerRepository>();
+            services.AddScoped<IDocumentRepository, DocumentRepository>();
 
             // MassTransit Publisher
             services.AddScoped<IMessagePublisher, MessagePublisher>();
@@ -179,6 +182,10 @@ namespace Codecaine.SportService.Infrastructure
 
             // Notification Whatsapp
             services.AddOptions<WhatsappSetting>().BindConfiguration(WhatsappSetting.DefaultSectionName);
+
+            // Open AI - Embedding  
+            services.AddOptions<OpenAiSetting>().BindConfiguration(OpenAiSetting.DefaultSectionName);
+            services.AddScoped<IOpenAiEmbeddingService, OpenAiEmbeddingService>();
 
 
             return services;

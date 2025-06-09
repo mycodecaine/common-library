@@ -1,12 +1,8 @@
-﻿using Codecaine.Common.Domain;
-using Codecaine.Common.Persistence.Dapper.Interfaces;
+﻿using Codecaine.Common.Persistence.Dapper.Interfaces;
 using Codecaine.SportService.Domain.Entities;
 using Codecaine.SportService.Domain.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Dapper;
+
 
 namespace Codecaine.SportService.Infrastructure.DataAccess.Repositories
 {
@@ -18,12 +14,34 @@ namespace Codecaine.SportService.Infrastructure.DataAccess.Repositories
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
-        public  Task Insert(Document document)
+        public async  Task InsertAsync(Document document)
         {
-           // var sql = "SELECT * FROM Users WHERE Id = @Id";
-          //  await _context.Connection.ExecuteAsync(sql, entity, _context.Transaction);
+            string sql = "INSERT INTO documents (id, content, embedding) VALUES (@Id, @Content, @Embedding)";
 
-            throw new NotImplementedException("Insert method is not implemented yet.");
+            await _context.Connection.ExecuteAsync(sql, new
+            {
+                Id = document.Id,
+                Content = document.Content,
+                Embedding = document.Embedding.ToArray()
+            }, _context.Transaction);
+         
+        }
+
+        public async Task<IEnumerable<(string Content, double Similarity)>> SearchSimilarAsync(List<float> queryEmbedding, int topK = 5)
+        {
+            
+                var embeddingString = string.Join(",", queryEmbedding);  
+                var sqlVector = @"
+                        SELECT content,  (embedding <#> @Embedding::vector) AS similarity
+                        FROM documents
+                        ORDER BY embedding <#> @Embedding::vector
+                        LIMIT @TopK;";
+
+                return await _context.Connection.QueryAsync<(string Content, double Similarity)>(sqlVector, new
+                {                    
+                    Embedding = $"[{embeddingString}]",
+                    TopK = topK
+                });           
         }
     }
 }
