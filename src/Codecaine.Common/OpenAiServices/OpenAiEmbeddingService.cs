@@ -10,6 +10,7 @@ namespace Codecaine.Common.OpenAiServices
     /// <summary>
     /// If you need to use OpenAI embeddings, you can use this service.
     /// IF using Azure Open API embeddings, you can follow https://chatgpt.com/share/6846a247-fcfc-8007-98ef-65cb1a8bc4b1
+    /// Take this notes to create OpenApiService https://chatgpt.com/share/6846a6bf-1cc0-8007-bcaa-d41562319c8b
     /// </summary>
     public class OpenAiEmbeddingService : IOpenAiEmbeddingService
     {
