@@ -1,30 +1,25 @@
 ﻿using Codecaine.Common.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Codecaine.SportService.Domain.Entities
 {
-    public class Document: AggregateRoot
+    public class Document: AggregateVectorRoot
     {
-        public string Content { get; private set; }
-        private readonly List<float> _embedding = [];
-        public IReadOnlyCollection<float> Embedding => _embedding.AsReadOnly();
+        public string Name { get; private set; }
+        public string Description { get; private set; }
 
-        public Document(string content, IEnumerable<float> embedding) : base(Guid.NewGuid())
+        public Document(string content, string name, string description) : base(Guid.NewGuid())
         {
-            Content = content;
-            if (embedding != null)
-            {
-                _embedding.AddRange(embedding);
-            }
+            Content = content;           
+
+            Name = name;
+            Description = description;
         }
 
-        public static Document Create(string content, IEnumerable<float> embedding)
+        public static Document Create(string content, string name,string description)
         {
-            return new Document(content, embedding);
+            var document = new Document(content,name,description);
+          
+            return document;
         }
     }
 }

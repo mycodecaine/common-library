@@ -28,13 +28,13 @@ namespace Codecaine.SportService.Application.UseCases.Documents.Commands.CreateD
             _logger.LogInformation("CreateDocumentCommandHandler: {Content}", request.Content);
             var vector = await _openAiEmbeddingService.GetEmbeddingAsync(request.Content);
             // Create a new document entity
-            var document = Document.Create(request.Content, vector);
-            _unitOfWork.Begin();
+            var document = Document.Create(request.Content,"","");
+            await _unitOfWork.StartTransactionAsync(Guid.NewGuid());
             // Save the document to the repository
-            await _documentRepository.InsertAsync(document);
+            await _documentRepository.Insert(document);
 
             // Commit the transaction
-            _unitOfWork.Commit();
+            await _unitOfWork.CommitAsync(document);
             // Return the response with the created document ID
             return Result<CreateDocumentCommandResponse>.Success(new CreateDocumentCommandResponse(document.Id));
         });
