@@ -17,6 +17,7 @@
         "ASPNETCORE_HTTPS_PORT": "7283",
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ConnectionString__DataBase": "Server=127.0.0.1;Database=SportDb;User=sa;Password=P@ssW0rd;TrustServerCertificate=True",
+        "ConnectionString__DapperDataBase": "Host=localhost:5433;Database=DocumentDb;Username=postgres;Password=ipeadmin123456",
         "RabbitMq__Host": "localhost",
         "RabbitMq__UserName": "guest",
         "RabbitMq__Password": "guest",
@@ -50,7 +51,12 @@
         "FluentEmailSetting__SmtpServer": "",
         "FluentEmailSetting__SmtpPort": "587",
         "FluentEmailSetting__SmtpUser": "",
-        "FluentEmailSetting__SmtpPassword": ""
+        "FluentEmailSetting__SmtpPassword": "",
+        "OpenAi__ApiKey": "",
+        "OpenAi__BaseUrl": "https://api.openai.com/v1",
+        "OpenAi__Model": "text-embedding-3-small",
+        "OpenAi__MaxTokens": "1000",
+        "OpenAi__Temperature": "0.7"
 
       },
       "dotnetRunMessages": true,

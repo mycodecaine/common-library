@@ -31,6 +31,8 @@ namespace Codecaine.SportService.Application.Mappers
             CreateMap<PopularInCountry, PopularInCountryViewModel>();
 
             CreateMap<Player, PlayerViewModel>();
+
+            CreateMap<Document, DocumentViewModel>();
              
 
         }
