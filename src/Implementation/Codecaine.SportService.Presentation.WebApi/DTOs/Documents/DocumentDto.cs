@@ -3,6 +3,8 @@
   
     public record DocumentDto
     (
+        string Name,
+        string Description,
         string Content        
 
     );

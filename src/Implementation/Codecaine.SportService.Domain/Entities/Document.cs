@@ -15,7 +15,7 @@ namespace Codecaine.SportService.Domain.Entities
             Description = description;
         }
 
-        public static Document Create(string content, string name,string description)
+        public static Document Create( string name,string description,string content)
         {
             var document = new Document(content,name,description);
           

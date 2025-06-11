@@ -28,6 +28,20 @@ namespace Codecaine.Common.Domain
             _embedding.AddRange(vector);
         }
 
+        /*
+          
+         Example SQL table creation for storing documents with embeddings:
+         
+        CREATE TABLE Documents (
+                
+                id UUID PRIMARY KEY,
+                content TEXT,
+                embedding VECTOR(1536)  -- OpenAI embedding size
+            );
+          
+         
+         */
+
 
     }
 }

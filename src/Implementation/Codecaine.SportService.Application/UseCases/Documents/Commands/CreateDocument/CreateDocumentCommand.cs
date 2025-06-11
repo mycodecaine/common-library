@@ -5,5 +5,5 @@ namespace Codecaine.SportService.Application.UseCases.Documents.Commands.CreateD
 {
 
 
-    public record CreateDocumentCommand(string Content) : ICommand<Result<CreateDocumentCommandResponse>>;
+    public record CreateDocumentCommand(string Name, string Description, string Content) : ICommand<Result<CreateDocumentCommandResponse>>;
 }

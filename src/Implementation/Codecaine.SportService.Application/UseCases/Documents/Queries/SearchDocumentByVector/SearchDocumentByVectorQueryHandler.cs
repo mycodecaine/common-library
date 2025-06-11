@@ -14,19 +14,19 @@ namespace Codecaine.SportService.Application.UseCases.Documents.Queries.SearchDo
         private readonly ILogger<SearchDocumentByVectorQueryHandler> _logger;
         private readonly IDocumentRepository _repository;
        
-        private readonly IOpenAiEmbeddingService _openAiEmbeddingService;
+       // private readonly IOpenAiEmbeddingService _openAiEmbeddingService;
 
-        public SearchDocumentByVectorQueryHandler(ILogger<SearchDocumentByVectorQueryHandler> logger, IDocumentRepository repository,  IOpenAiEmbeddingService openAiEmbeddingService) : base(logger)
+        public SearchDocumentByVectorQueryHandler(ILogger<SearchDocumentByVectorQueryHandler> logger, IDocumentRepository repository) : base(logger)
         {
             _logger = logger;
             _repository = repository;           
-            _openAiEmbeddingService = openAiEmbeddingService;
+           // _openAiEmbeddingService = openAiEmbeddingService;
         }
 
         public override async Task<Maybe<List<DocumentViewModel>>> Handle(SearchDocumentByVectorQuery request, CancellationToken cancellationToken) =>
          await HandleSafelyAsync(async () =>
          {
-             var vector = await _openAiEmbeddingService.GetEmbeddingAsync(request.content);
+            // var vector = await _openAiEmbeddingService.GetEmbeddingAsync(request.content);
              //var documentResult = await _repository.SearchSimilarAsync(vector);
              //if (!documentResult.Any())
              //{

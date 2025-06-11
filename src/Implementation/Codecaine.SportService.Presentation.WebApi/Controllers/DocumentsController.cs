@@ -26,7 +26,7 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] DocumentDto request) =>
          await Result.Create(request, GeneralErrors.UnProcessableRequest)
-             .Map(request => new CreateDocumentCommand(request.Content))
+             .Map(request => new CreateDocumentCommand(request.Name,request.Description,request.Content))
              .Bind(command => Mediator.Send(command))
              .Match(Ok, BadRequest);
 

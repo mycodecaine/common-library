@@ -1,4 +1,5 @@
 ﻿using Codecaine.Common;
+using Codecaine.Common.AiServices.Interfaces;
 using Codecaine.Common.AspNetCore.OpenApi;
 using Codecaine.Common.Authentication;
 using Codecaine.Common.Authentication.Providers.KeyCloak;
@@ -13,8 +14,8 @@ using Codecaine.Common.Notifications;
 using Codecaine.Common.Notifications.Email;
 using Codecaine.Common.Notifications.Sms;
 using Codecaine.Common.Notifications.Whatsapp;
-using Codecaine.Common.OpenAiServices;
-using Codecaine.Common.OpenAiServices.Interfaces;
+using Codecaine.Common.AiServices;
+//using Codecaine.Common.OpenAiServices.Interfaces;
 using Codecaine.Common.Persistence;
 using Codecaine.Common.Persistence.Dapper;
 using Codecaine.Common.Persistence.Dapper.Interfaces;
@@ -41,6 +42,7 @@ using MongoDB.Bson.Serialization.Serializers;
 using Npgsql;
 using System.Data;
 using System.Net.Mail;
+using Codecaine.Common.AiServices.OpenAi;
 
 
 
@@ -184,8 +186,8 @@ namespace Codecaine.SportService.Infrastructure
             services.AddOptions<WhatsappSetting>().BindConfiguration(WhatsappSetting.DefaultSectionName);
 
             // Open AI - Embedding  
-            services.AddOptions<OpenAiSetting>().BindConfiguration(OpenAiSetting.DefaultSectionName);
-            services.AddScoped<IOpenAiEmbeddingService, OpenAiEmbeddingService>();
+            services.AddOptions<OpenAiSetting>().BindConfiguration(OpenAiSetting.DefaultSectionName);           
+            services.AddScoped<IEmbeddingService, OpenAiEmbeddingService>();
 
 
             return services;

@@ -36,7 +36,7 @@ namespace Codecaine.Common.Persistence.Dapper
 
         public async Task<Maybe<TEntity>> GetBydIdAsync<TEntity>(Guid id) where TEntity : Entity
         {
-            var tableName = typeof(TEntity).Name;
+            var tableName = GetTableName(typeof(TEntity));
             string sql = $"SELECT * FROM {tableName} WHERE Id = @Id;";
             var parameters = new DynamicParameters();
             parameters.Add("@Id" , id);
@@ -46,7 +46,7 @@ namespace Codecaine.Common.Persistence.Dapper
 
         public async Task Insert<TEntity>(TEntity entity) where TEntity : Entity
         {
-            var tableName = typeof(TEntity).Name;
+            var tableName = GetTableName(typeof(TEntity));
             SetAuditProperties(entity, SaveBy);
             await UpdateVector(entity); // Ensure vector is updated before insertion
 
@@ -63,7 +63,7 @@ namespace Codecaine.Common.Persistence.Dapper
         }
         public async Task Update<TEntity>(TEntity entity) where TEntity : Entity
         {
-            var tableName = typeof(TEntity).Name;
+            var tableName = GetTableName(typeof(TEntity));
             SetAuditProperties(entity, SaveBy);
             await UpdateVector(entity);
             var (sql, parameters) = GenerateUpdate(tableName, entity);
@@ -135,7 +135,7 @@ namespace Codecaine.Common.Persistence.Dapper
         public async Task<IEnumerable<(string Content, double Similarity)>> SearchContentVectorAsync<TEntity>(string input, int topK = 5) where TEntity : Entity
         {
             var queryEmbedding = await _embeddingService.GetVectorAsync(input);
-            var tableName = typeof(TEntity).Name;
+            var tableName = GetTableName(typeof(TEntity));
 
             var embeddingString = string.Join(",", queryEmbedding);
             var sqlVector = $@"
@@ -154,7 +154,7 @@ namespace Codecaine.Common.Persistence.Dapper
         public async Task<IEnumerable<(Guid id, double Similarity)>> SearchIdByVectorAsync<TEntity>(string input, int topK = 5) where TEntity : Entity
         {
             var queryEmbedding = await _embeddingService.GetVectorAsync(input);
-            var tableName = typeof(TEntity).Name;
+            var tableName = GetTableName(typeof(TEntity));
             var embeddingString = string.Join(",", queryEmbedding);
             var sqlVector = $@"
                         SELECT id,  (embedding <#> @Embedding::vector) AS similarity
@@ -220,7 +220,7 @@ namespace Codecaine.Common.Persistence.Dapper
 
         private static (string Sql, DynamicParameters Parameters) GenerateInsert<T>(string tableName, T entity)
         {
-            var props = typeof(T).GetProperties().Where(p => p.CanRead && p.Name != "Id").ToList();
+            var props = typeof(T).GetProperties().Where(p => p.CanRead && p.Name != "DomainEvents").ToList();
             var columnNames = string.Join(", ", props.Select(p => p.Name));
             var paramNames = string.Join(", ", props.Select(p => "@" + p.Name));
 
@@ -229,7 +229,26 @@ namespace Codecaine.Common.Persistence.Dapper
             var parameters = new DynamicParameters();
             foreach (var prop in props)
             {
-                parameters.Add("@" + prop.Name, prop.GetValue(entity));
+                if (prop.Name == "Embedding" )
+                {
+                    var value = prop.GetValue(entity);
+
+                    // Handle null and support both List<float> and float[]
+                    float[] data = value switch
+                    {
+                        List<float> list => list.ToArray(),
+                        float[] array => array,
+                        IEnumerable<float> enumerable => enumerable.ToArray(),
+                        null => Array.Empty<float>(),
+                        _ => throw new InvalidCastException($"Property {prop.Name} is not a valid float vector.")
+                    };
+
+                    parameters.Add("@" + prop.Name, data);
+                }
+                else
+                {
+                    parameters.Add("@" + prop.Name, prop.GetValue(entity));
+                }
             }
 
             return (sql, parameters);
@@ -287,6 +306,12 @@ namespace Codecaine.Common.Persistence.Dapper
             {
               await  aggregateRoot.UpdateEmbeddingAsync(_embeddingService);  
             }
+        }
+
+        private string GetTableName(Type type)
+        {
+            // Use custom attribute or convention-based logic here
+            return type.Name;
         }
 
         protected virtual void Dispose(bool disposing)

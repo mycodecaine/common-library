@@ -19,14 +19,14 @@ namespace Codecaine.Common.Persistence.Dapper
             Context = dbContext;
         }
 
-        public Task Delete(Guid id)
+        public async Task Delete(Guid id)
         {
             var data = Context.GetBydIdAsync<TEntity>(id).Result;
             if (data.HasValue)
             {
-                Remove(data.Value);
+              await  Remove(data.Value);
             }
-            return Task.CompletedTask;
+           
         }
 
         public Task<Maybe<TEntity>> GetByIdAsync(Guid id)
@@ -44,22 +44,22 @@ namespace Codecaine.Common.Persistence.Dapper
             throw new NotImplementedException();
         }
 
-        public Task Insert(TEntity entity)
+        public async Task Insert(TEntity entity)
         {
-            Context.Insert(entity);
-            return Task.CompletedTask;
+           await Context.Insert(entity);
+            
         }
 
-        public Task Remove(TEntity entity)
+        public async Task Remove(TEntity entity)
         {
-           Context.Remove(entity);
-            return Task.CompletedTask;
+          await Context.Remove(entity);
+           
         }
 
-        public Task Update(TEntity entity)
+        public async Task Update(TEntity entity)
         {
-           Context.Update(entity);
-            return Task.CompletedTask;
+          await Context.Update(entity);
+          
         }
     }
 }
