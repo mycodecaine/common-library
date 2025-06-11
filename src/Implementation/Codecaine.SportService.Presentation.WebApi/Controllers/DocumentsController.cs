@@ -34,7 +34,7 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
         [HttpPost("Search")]
         [ProducesResponseType(typeof(List<DocumentViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Search([FromBody] DocumentDto request) =>
+        public async Task<IActionResult> Search([FromBody] SearchDocumentContentDto request) =>
          await Maybe<SearchDocumentByVectorQuery>
              .From(new SearchDocumentByVectorQuery(request.Content))
              .Bind(query => Mediator.Send(query))

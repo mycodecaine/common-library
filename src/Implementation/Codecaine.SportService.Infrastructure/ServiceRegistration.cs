@@ -1,5 +1,6 @@
 ﻿using Codecaine.Common;
 using Codecaine.Common.AiServices.Interfaces;
+using Codecaine.Common.AiServices.OpenAi;
 using Codecaine.Common.AspNetCore.OpenApi;
 using Codecaine.Common.Authentication;
 using Codecaine.Common.Authentication.Providers.KeyCloak;
@@ -14,8 +15,6 @@ using Codecaine.Common.Notifications;
 using Codecaine.Common.Notifications.Email;
 using Codecaine.Common.Notifications.Sms;
 using Codecaine.Common.Notifications.Whatsapp;
-using Codecaine.Common.AiServices;
-//using Codecaine.Common.OpenAiServices.Interfaces;
 using Codecaine.Common.Persistence;
 using Codecaine.Common.Persistence.Dapper;
 using Codecaine.Common.Persistence.Dapper.Interfaces;
@@ -34,7 +33,6 @@ using Codecaine.SportService.Infrastructure.Messaging;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
@@ -42,7 +40,6 @@ using MongoDB.Bson.Serialization.Serializers;
 using Npgsql;
 using System.Data;
 using System.Net.Mail;
-using Codecaine.Common.AiServices.OpenAi;
 
 
 

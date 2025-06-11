@@ -2,6 +2,7 @@
 using Codecaine.Common.AiServices.Interfaces;
 using Codecaine.Common.Domain;
 using Codecaine.Common.Domain.Interfaces;
+using Codecaine.Common.Exceptions;
 using Codecaine.Common.Persistence.Dapper.Interfaces;
 using Codecaine.Common.Primitives.Maybe;
 using Dapper;
@@ -119,7 +120,7 @@ namespace Codecaine.Common.Persistence.Dapper
             {
                 if (_transaction == null)
                 {
-                    throw new InvalidOperationException("Transaction has not been started. Call StartTransactionAsync first.");
+                    throw new CommonLibraryException( new Primitives.Errors.Error("TransactionHasNotStarted", "Transaction has not been started. Call StartTransactionAsync first."));
                 }
                 _transaction?.Commit();
                 _transaction = null;
@@ -128,7 +129,8 @@ namespace Codecaine.Common.Persistence.Dapper
             catch (Exception ex)
             {
                 RollbackTransaction();
-                throw new InvalidOperationException("Failed to commit transaction", ex);
+               
+                throw new CommonLibraryException(new Primitives.Errors.Error("FailedCommitTransaction", $"Failed to commit transaction : { ex.Message }"));
             }
         }
 
@@ -140,7 +142,7 @@ namespace Codecaine.Common.Persistence.Dapper
             var embeddingString = string.Join(",", queryEmbedding);
             var sqlVector = $@"
                         SELECT content,  (embedding <#> @Embedding::vector) AS similarity
-                       FROM    ""{tableName}""
+                        FROM    ""{tableName}""
                         ORDER BY embedding <#> @Embedding::vector
                         LIMIT @TopK;";
 
@@ -256,7 +258,7 @@ namespace Codecaine.Common.Persistence.Dapper
 
         private static (string Sql, DynamicParameters Parameters) GenerateUpdate<T>(string tableName, T entity, string keyName = "Id")
         {
-            var props = typeof(T).GetProperties().Where(p => p.CanRead && p.Name != keyName).ToList();
+            var props = typeof(T).GetProperties().Where(p => p.CanRead && p.Name != keyName && p.Name != "DomainEvents").ToList();
             var setClause = string.Join(", ", props.Select(p => $"{p.Name} = @{p.Name}"));
 
             var sql = $"UPDATE {tableName} SET {setClause} WHERE {keyName} = @{keyName};";
@@ -264,7 +266,26 @@ namespace Codecaine.Common.Persistence.Dapper
             var parameters = new DynamicParameters();
             foreach (var prop in props)
             {
-                parameters.Add("@" + prop.Name, prop.GetValue(entity));
+                if (prop.Name == "Embedding")
+                {
+                    var value = prop.GetValue(entity);
+
+                    // Handle null and support both List<float> and float[]
+                    float[] data = value switch
+                    {
+                        List<float> list => list.ToArray(),
+                        float[] array => array,
+                        IEnumerable<float> enumerable => enumerable.ToArray(),
+                        null => Array.Empty<float>(),
+                        _ => throw new InvalidCastException($"Property {prop.Name} is not a valid float vector.")
+                    };
+
+                    parameters.Add("@" + prop.Name, data);
+                }
+                else
+                {
+                    parameters.Add("@" + prop.Name, prop.GetValue(entity));
+                }
             }
 
             var keyProp = typeof(T).GetProperty(keyName);
@@ -308,10 +329,10 @@ namespace Codecaine.Common.Persistence.Dapper
             }
         }
 
-        private string GetTableName(Type type)
+        private static string GetTableName(Type type)
         {
             // Use custom attribute or convention-based logic here
-            return type.Name;
+            return type.Name.ToLower();
         }
 
         protected virtual void Dispose(bool disposing)

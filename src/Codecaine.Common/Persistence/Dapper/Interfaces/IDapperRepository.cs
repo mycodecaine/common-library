@@ -58,5 +58,11 @@ namespace Codecaine.Common.Persistence.Dapper.Interfaces
 
         Task<(IEnumerable<TEntity> Items, int TotalCount)> GetPagedAsync(Specification<TEntity> spec, CancellationToken cancellationToken = default);
 
+        Task<IEnumerable<(string Content, double Similarity)>> SearchContentVectorAsync(string input, int topK = 5);
+
+        Task<IEnumerable<(Guid id, double Similarity)>> SearchIdByVectorAsync(string input, int topK = 5);
+
+        Task<IEnumerable<(TEntity entity, double Similarity)>> SearchEntityByVectorAsync(string input, int topK = 5);
+
     }
 }

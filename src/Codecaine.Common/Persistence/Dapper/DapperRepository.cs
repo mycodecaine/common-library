@@ -61,5 +61,20 @@ namespace Codecaine.Common.Persistence.Dapper
           await Context.Update(entity);
           
         }
+
+        public Task<IEnumerable<(string Content, double Similarity)>> SearchContentVectorAsync(string input, int topK = 5) 
+        {
+           return Context.SearchContentVectorAsync<TEntity>(input, topK);
+        }
+
+        public Task<IEnumerable<(Guid id, double Similarity)>> SearchIdByVectorAsync(string input, int topK = 5) 
+        {
+           return Context.SearchIdByVectorAsync<TEntity>(input, topK);
+        }
+
+        public Task<IEnumerable<(TEntity entity, double Similarity)>> SearchEntityByVectorAsync(string input, int topK = 5)
+        {
+            return Context.SearchEntityByVectorAsync<TEntity>(input, topK);
+        }
     }
 }
