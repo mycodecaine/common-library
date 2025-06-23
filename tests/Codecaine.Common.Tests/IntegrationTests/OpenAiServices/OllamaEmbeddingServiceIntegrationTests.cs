@@ -20,7 +20,7 @@ namespace Codecaine.Common.Tests.IntegrationTests.OpenAiServices
             var setting = new OllamaSetting
             {
                 BaseUrl = "http://localhost:11434/api",
-                Model = "nomic-embed-text"
+                EmbeddingModel = "nomic-embed-text"
             };
 
             // Step 2: Mock IHttpClientFactory to return HttpClient

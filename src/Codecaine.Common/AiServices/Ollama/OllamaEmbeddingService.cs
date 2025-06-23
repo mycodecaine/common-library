@@ -11,6 +11,11 @@ using System.Threading.Tasks;
 
 namespace Codecaine.Common.AiServices.Ollama
 {
+
+    /// <summary>
+    /// Install Ollama locally and run the following command to install the embedding model: https://chatgpt.com/share/6858fd74-ebcc-8007-a9c5-371aeff7d272
+    /// This will install embedded 1536 size locally.It is not direct approach like openAI https://chatgpt.com/share/68572e26-7668-8007-b60d-536655dae080
+    /// </summary>
     public class OllamaEmbeddingService : IEmbeddingService
     {
         private readonly IHttpService _httpService;
@@ -27,7 +32,7 @@ namespace Codecaine.Common.AiServices.Ollama
             var request = new
             {
                 prompt = input,
-                model = _ollamaSetting.Model
+                model = _ollamaSetting.EmbeddingModel
             };
 
             var ollamaUrl = $"{_ollamaSetting.BaseUrl}/embeddings";

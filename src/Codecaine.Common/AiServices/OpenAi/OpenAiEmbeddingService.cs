@@ -3,12 +3,7 @@ using Codecaine.Common.Exceptions;
 using Codecaine.Common.HttpServices;
 using Codecaine.Common.OpenAiServices.Utility;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Codecaine.Common.AiServices.OpenAi
 {
@@ -34,7 +29,7 @@ namespace Codecaine.Common.AiServices.OpenAi
             var request = new
             {
                 input,
-                model = _openAiSettings.Model
+                model = _openAiSettings.EmbeddingModel
             };
 
             var openAiUrl = $"{_openAiSettings.BaseUrl}/embeddings";
