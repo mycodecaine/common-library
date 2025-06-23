@@ -1,4 +1,5 @@
 ﻿using Codecaine.Common;
+using Codecaine.Common.AiServices.HuggingFace;
 using Codecaine.Common.AiServices.Interfaces;
 using Codecaine.Common.AiServices.OpenAi;
 using Codecaine.Common.AspNetCore.OpenApi;
@@ -184,7 +185,11 @@ namespace Codecaine.SportService.Infrastructure
 
             // Open AI - Embedding  
             services.AddOptions<OpenAiSetting>().BindConfiguration(OpenAiSetting.DefaultSectionName);           
-            services.AddScoped<IEmbeddingService, OpenAiEmbeddingService>();
+            // services.AddScoped<IEmbeddingService, OpenAiEmbeddingService>();
+
+            // HuggingFace - Embedding
+            services.AddOptions<HuggingFaceSetting>().BindConfiguration(HuggingFaceSetting.DefaultSectionName);
+            services.AddScoped<IEmbeddingService, HuggingFaceEmbeddingService2>();
 
 
             return services;
