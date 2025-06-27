@@ -47,7 +47,7 @@ namespace Codecaine.Common.AiServices.OpenAi
                 throw new CommonLibraryException(new Primitives.Errors.Error("FailedToGenerateTextFromOpenAI", "Failed to generate text from OpenAI API."));
             }
             var message = result.RootElement.GetProperty("choices")[0].GetProperty("message").GetProperty("content").GetString();
-            return message;
+            return message??"";
         }
     }
 }
