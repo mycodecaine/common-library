@@ -26,7 +26,7 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] DocumentDto request) =>
          await Result.Create(request, GeneralErrors.UnProcessableRequest)
-             .Map(request => new CreateDocumentCommand(request.Content))
+             .Map(request => new CreateDocumentCommand(request.Name,request.Description,request.Content))
              .Bind(command => Mediator.Send(command))
              .Match(Ok, BadRequest);
 
@@ -34,7 +34,7 @@ namespace Codecaine.SportService.Presentation.WebApi.Controllers
         [HttpPost("Search")]
         [ProducesResponseType(typeof(List<DocumentViewModel>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> Search([FromBody] DocumentDto request) =>
+        public async Task<IActionResult> Search([FromBody] SearchDocumentContentDto request) =>
          await Maybe<SearchDocumentByVectorQuery>
              .From(new SearchDocumentByVectorQuery(request.Content))
              .Bind(query => Mediator.Send(query))

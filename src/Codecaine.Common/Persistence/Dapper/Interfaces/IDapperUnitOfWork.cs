@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Codecaine.Common.Domain;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,7 @@ namespace Codecaine.Common.Persistence.Dapper.Interfaces
 {
     public interface IDapperUnitOfWork
     {
-        void Begin();
-        void Commit();
-        void Rollback();
+        Task StartTransactionAsync(Guid saveBy, CancellationToken cancellationToken = default);
+        Task CommitAsync<TEntity>(TEntity entity) where TEntity : Entity;
     }
 }

@@ -56,7 +56,12 @@
         "OpenAi__BaseUrl": "https://api.openai.com/v1",
         "OpenAi__Model": "text-embedding-3-small",
         "OpenAi__MaxTokens": "1000",
-        "OpenAi__Temperature": "0.7"
+        "OpenAi__Temperature": "0.7",
+        "HuggingFace__ApiKey": "",
+        "HuggingFace__BaseUrl": "https://api-inference.huggingface.co",
+        "HuggingFace__Model": "paraphrase-MiniLM-L6-v2",
+        "HuggingFace__MaxTokens": "1000",
+        "HuggingFace__Temperature": "0.7"
 
       },
       "dotnetRunMessages": true,

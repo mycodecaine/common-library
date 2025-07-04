@@ -1,4 +1,5 @@
-﻿using Codecaine.Common.Persistence.Dapper.Interfaces;
+﻿using Codecaine.Common.Persistence.Dapper;
+using Codecaine.Common.Persistence.Dapper.Interfaces;
 using Codecaine.SportService.Domain.Entities;
 using Codecaine.SportService.Domain.Repositories;
 using Dapper;
@@ -6,11 +7,11 @@ using Dapper;
 
 namespace Codecaine.SportService.Infrastructure.DataAccess.Repositories
 {
-    public class DocumentRepository : IDocumentRepository
+    public class DocumentRepository : DapperRepository<Document>, IDocumentRepository
     {
         private readonly IDapperDbContext _context;
 
-        public DocumentRepository(IDapperDbContext context)
+        public DocumentRepository(IDapperDbContext context) : base(context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }

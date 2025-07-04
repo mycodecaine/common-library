@@ -1,28 +1,34 @@
 ﻿using Codecaine.Common.AiServices.Interfaces;
+using Codecaine.Common.AiServices.Model;
+using Codecaine.Common.AiServices.Ollama;
 using Codecaine.Common.AiServices.OpenAi;
 using Codecaine.Common.HttpServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Codecaine.Common.Tests.IntegrationTests.OpenAiServices
 {
-    [TestFixture]
-    public class OpenAiEmbeddingServiceIntegrationTests
+    internal class OllamaLargeLanguageModelServiceTests
     {
-        private IEmbeddingService _embeddingService;
         private IHttpClientFactory _factory;
+        private ILargeLanguageModelService _llmService;
 
         [SetUp]
         public void Setup()
         {
             // Load from environment or configuration
-            var setting = new OpenAiSetting
+            var setting = new OllamaSetting
             {
-                BaseUrl = "https://api.openai.com/v1",
-                ApiKey = "XXXXXXXXXXX_54fpSSuhSaru72sf_yu7fsZucVn3cw-5fGphyzc1gsMmIR4xUT3oMyw_vq44o9iZPtpT3BlbkFJ_6il9gSt6jECxsOhtLxBTf0TVmKCbqLUE5fgGjJSlBq5p5zzlHCe2F-jNKzdNL8qK-lc_XXXX",
-                EmbeddingModel = "text-embedding-3-small"
+                BaseUrl = "http://localhost:11434/api",
+               
+                LargeLanguageModel = "llama3"
             };
 
             // Step 2: Mock IHttpClientFactory to return HttpClient
@@ -42,22 +48,24 @@ namespace Codecaine.Common.Tests.IntegrationTests.OpenAiServices
             var options = Options.Create(setting);
             var httpService = new HttpService(_factory, loggerMock.Object); // real implementation
 
-            _embeddingService = new OpenAiEmbeddingService(options, httpService);
+            _llmService = new OllamaLargeLanguageModelService(options, httpService);
         }
 
         [Test]
-        public async Task GetEmbeddingAsync_ShouldReturnEmbedding_ForValidInput()
+        public async Task GenerateTextAsync_ShouldReturnText_ForValidInput()
         {
             // Arrange
-            var input = "This is a test sentence for embedding.";
-
+            var prompt = new PromptMessage
+            (
+                 "user",
+                 "What is the capital of France?"
+            );
             // Act
-            var embedding = await _embeddingService.GetVectorAsync(input);
-
+            var response = await _llmService.GenerateTextAsync(new List<PromptMessage> { prompt });
             // Assert
-            Assert.That(embedding,Is.Not.Null);
-           
-               
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response, Is.Not.Empty);
+            Assert.That(response, Does.Contain("Paris"));
         }
     }
 }
